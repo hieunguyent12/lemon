@@ -1,0 +1,17 @@
+{
+  "name": "lemon",
+  "private": true,
+  "workspaces": [
+    "web",
+    "native"
+  ],
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "husky": "^7.0.0",
+    "ts-jest": "^26.5.5"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "generate": "graphql-codegen --config codegen.yml"
+  }
+}
