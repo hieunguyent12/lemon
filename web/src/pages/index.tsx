@@ -3,9 +3,9 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 
-import { AvatarMenu } from "../ui/AvatarMenu";
+import { ListItem } from "../ui/ListItem";
 
 const Home: NextPage = () => {
-  return <AvatarMenu />;
+  return <ListItem isTeacher _className="Pre-cal Honors" period={7} />;
 };
 export default Home;

@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from "react";
 /**
  * Hook that alerts clicks outside of the passed ref
  */
-export function useOutsideAlerter(ref: any, cb: () => void) {
+export function useOutsideClick(ref: any, cb: () => void) {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
@@ -27,7 +27,7 @@ export function useOutsideAlerter(ref: any, cb: () => void) {
  */
 export function OutsideAlerter(props: any) {
   const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef, props.callback);
+  useOutsideClick(wrapperRef, props.callback);
 
   return (
     <div ref={wrapperRef} className={`flex w-min`} style={props.style}>
