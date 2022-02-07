@@ -15,7 +15,10 @@ module.exports = {
         gray: colors.gray,
         lime: colors.lime,
         orange: colors.orange,
-        // yellow: colors.yellow,
+        muted: "#9ca3af",
+      },
+      borderColor: {
+        borderColor: "#f3f4f6",
       },
     },
   },

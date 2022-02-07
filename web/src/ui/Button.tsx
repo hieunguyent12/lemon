@@ -3,6 +3,13 @@ import React from "react";
 const colors = {
   primary: "bg-primary-600 text-white hover:bg-primary-700 ",
   secondary: "border-2 border-primary-600	text-primary-600 hover:bg-primary-100",
+  accent: "text-primary-600",
+};
+
+const textColors = {
+  primary: "text-white",
+  secondary: "text-primary-600",
+  accent: "text-primary-600",
 };
 
 const sizes = {
@@ -29,14 +36,15 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   const backgroundColor = colors[variant];
   const sizeClass = sizes[size];
+  const textColor = textColors[variant];
 
   return (
     <button
       disabled={!!disabled}
-      className={`${backgroundColor} ${sizeClass} ${className} flex rounded items-center justify-center transition duration-200 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed`}
+      className={`${backgroundColor} ${sizeClass} ${className} flex rounded items-center justify-center select-none transition duration-200 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed`}
       {...props}
     >
-      <span className="flex items-center">
+      <span className={`flex items-center ${textColor}`}>
         {icon && <span className={`mr-2 items-center`}>{icon}</span>}
         {children}
       </span>

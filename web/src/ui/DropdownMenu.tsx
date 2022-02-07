@@ -31,7 +31,7 @@ export const DropdownMenu = forwardRef<any, DropdropMenuProps>((props, ref) => {
       }}
       ref={ref}
       {...props}
-      className="flex flex-col rounded absolute border border-gray-200 shadow-lg bg-white w-20 select-none"
+      className="flex flex-col rounded absolute border border-borderColor shadow-lg bg-white w-20 select-none z-10"
       onClick={(e) => e.stopPropagation()}
     >
       {props.children}

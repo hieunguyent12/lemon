@@ -1,6 +1,7 @@
 import React from "react";
 
 const sizes = {
+  small: "py-0.5 px-2.5 text-xs",
   regular: "py-1 px-3",
 };
 

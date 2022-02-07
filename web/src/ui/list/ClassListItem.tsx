@@ -1,21 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
 import { usePopper } from "react-popper";
 
-import { DropdownMenu, DropdownMenuItem } from "./DropdownMenu";
-import getOrdinalSuffix from "../utils/ordinal_suffix";
-import ThreeDots from "../icons/ThreeDots";
-import { useOutsideClick } from "../hooks/useOutsideAlert";
+import { DropdownMenu, DropdownMenuItem } from "../DropdownMenu";
+import getOrdinalSuffix from "../../utils/ordinal_suffix";
+import ThreeDots from "../../icons/ThreeDots";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { getGradeColor } from "../../utils/getGradeColor";
+import ListItem from "./ListItem";
+import getLetterGrade from "../../utils/getLetterGrade";
 
-const GRADE_COLORS = {
-  100: "text-primary-600",
-  90: "text-primary-600",
-  80: "text-lime-500",
-  70: "text-yellow-500",
-  60: "text-yellow-600",
-  50: "text-orange-500",
-};
-
-export type ListItemProps = {
+export type ClassListItemProps = {
   isTeacher: boolean;
   _className: string;
   period: number;
@@ -25,7 +19,7 @@ export type ListItemProps = {
   teacherName?: string;
 };
 
-export const ListItem: React.FC<ListItemProps> = ({
+export const ClassListItem: React.FC<ClassListItemProps> = ({
   isTeacher,
   _className,
   period,
@@ -35,7 +29,7 @@ export const ListItem: React.FC<ListItemProps> = ({
   teacherName,
 }) => {
   return (
-    <div className="flex justify-between items-center h-14 border border-gray-100 p-3 rounded-md max-w-lg	cursor-pointer select-none transition duration-200 ease-in-out hover:bg-gray-100">
+    <ListItem>
       {isTeacher ? (
         <TeacherContent
           _className={_className}
@@ -52,17 +46,14 @@ export const ListItem: React.FC<ListItemProps> = ({
           teacherName={teacherName}
         />
       )}
-    </div>
+    </ListItem>
   );
 };
 
-const TeacherContent: React.FC<Omit<ListItemProps, "grade" | "isTeacher">> = ({
-  _className,
-  period,
-  studentCount,
-  roomNumber,
-}) => {
-  const [showMenu, setShowMenu] = useState(true);
+const TeacherContent: React.FC<
+  Omit<ClassListItemProps, "grade" | "isTeacher">
+> = ({ _className, period, studentCount, roomNumber }) => {
+  const [showMenu, setShowMenu] = useState(false);
   const [referenceElement, setReferenceElement] = useState<any>(null);
   const [popperElement, setPopperElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -83,9 +74,9 @@ const TeacherContent: React.FC<Omit<ListItemProps, "grade" | "isTeacher">> = ({
   return (
     <>
       <p>{_className}</p>
-      <p className="text-gray-400">{getOrdinalSuffix(period)} period</p>
-      <p className="text-gray-400">{studentCount} students</p>
-      <p className="text-gray-400">Room {roomNumber}</p>
+      <p className="text-muted text-sm">{getOrdinalSuffix(period)} period</p>
+      <p className="text-muted text-sm">{studentCount} students</p>
+      <p className="text-muted text-sm">Room {roomNumber}</p>
       <span
         className="hover:bg-gray-300 rounded-md py-1 relative"
         ref={(ref) => {
@@ -112,7 +103,7 @@ const TeacherContent: React.FC<Omit<ListItemProps, "grade" | "isTeacher">> = ({
 };
 
 const StudentContent: React.FC<
-  Omit<ListItemProps, "studentCount" | "isTeacher">
+  Omit<ClassListItemProps, "studentCount" | "isTeacher">
 > = ({ _className, period, roomNumber, grade, teacherName }) => {
   const gradeColor = getGradeColor(grade);
   const letterGrade = getLetterGrade(grade);
@@ -121,45 +112,13 @@ const StudentContent: React.FC<
     <>
       <div>
         <p className="">{_className}</p>
-        <span className="text-sm text-gray-400">{teacherName}</span>
+        <span className="text-sm text-muted">{teacherName}</span>
       </div>
       <p className={`${gradeColor}`}>
         {grade}% {letterGrade}
       </p>
-      <p className="text-gray-400">{getOrdinalSuffix(period)} period</p>
-      <p className="text-gray-400">Room {roomNumber}</p>
+      <p className="text-muted text-sm">{getOrdinalSuffix(period)} period</p>
+      <p className="text-muted text-sm">Room {roomNumber}</p>
     </>
   );
 };
-
-function getGradeColor(grade: number | undefined) {
-  if (!grade) {
-    return null;
-  }
-
-  if (grade < 50) {
-    return GRADE_COLORS[50];
-  } else {
-    return GRADE_COLORS[
-      (Math.floor((grade as any) / 10) * 10) as keyof typeof GRADE_COLORS
-    ];
-  }
-}
-
-function getLetterGrade(grade: number | undefined) {
-  if (!grade) {
-    return "Unknown grade";
-  }
-
-  if (grade >= 90) {
-    return "A";
-  } else if (grade < 90 && grade >= 80) {
-    return "B";
-  } else if (grade < 80 && grade >= 70) {
-    return "C";
-  } else if (grade < 70 && grade >= 60) {
-    return "D";
-  } else {
-    return "F";
-  }
-}
