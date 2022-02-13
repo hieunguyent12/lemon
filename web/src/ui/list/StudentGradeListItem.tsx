@@ -6,6 +6,7 @@ import ThreeDots from "../../icons/ThreeDots";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { getGradeColor } from "../../utils/getGradeColor";
 import ListItem from "./ListItem";
+import { Input } from "../Input";
 
 export type StudentGradeListItemProps = {
   studentName: string;
@@ -27,6 +28,7 @@ const TeacherContent: React.FC<StudentGradeListItemProps> = ({
   studentName,
   grade,
 }) => {
+  const [isEditingGrade, setIsEditingGrade] = useState(false);
   const [showMenu, setShowMenu] = useState(true);
   const [referenceElement, setReferenceElement] = useState<any>(null);
   const [popperElement, setPopperElement] = useState(null);
@@ -42,19 +44,39 @@ const TeacherContent: React.FC<StudentGradeListItemProps> = ({
     ],
   });
   const popperRef = useRef<any>();
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const gradeColor = getGradeColor(grade);
 
   useOutsideClick(popperRef, () => setShowMenu(false));
+
+  useEffect(() => {
+    if (inputRef && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditingGrade, inputRef.current]);
 
   return (
     <>
       <p>{studentName}</p>
       <div className="flex items-center">
+        {/* If we are editing grades, show an input to enter new grades */}
         <div className="mr-10">
-          {grade ? (
-            <p className={`${gradeColor}`}>{grade}%</p>
+          {isEditingGrade ? (
+            <Input
+              ref={inputRef}
+              // TODO save grade when the input loses focus
+              onBlur={() => setIsEditingGrade(false)}
+              size="small"
+              className="w-12"
+            />
           ) : (
-            <p className="text-muted">Enter grade</p>
+            <div onClick={() => setIsEditingGrade(true)}>
+              {grade ? (
+                <p className={`${gradeColor}`}>{grade}%</p>
+              ) : (
+                <p className="text-muted">Enter grade</p>
+              )}
+            </div>
           )}
         </div>
         <span

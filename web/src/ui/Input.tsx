@@ -1,7 +1,7 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 const sizes = {
-  small: "py-0.5 px-2.5 text-xs",
+  small: "py-0.5 px-2 text-sm",
   regular: "py-1 px-3",
 };
 
@@ -11,20 +11,26 @@ export type InputProps = {
   disabled?: boolean;
 } & React.HTMLAttributes<HTMLInputElement>;
 
-export const Input: React.FC<InputProps> = ({
-  children,
-  disabled = false,
-  inputType = "text",
-  className,
-  size = "regular",
-  ...props
-}) => {
-  const inputSize = sizes[size];
-  return (
-    <input
-      type={inputType}
-      {...props}
-      className={`${inputSize} ${className} shadow appearance-none border rounded text-gray-700 leading-tight focus:outline-none focus:ring`}
-    ></input>
-  );
-};
+export const Input = forwardRef<any, InputProps>(
+  (
+    {
+      children,
+      disabled = false,
+      inputType = "text",
+      className,
+      size = "regular",
+      ...props
+    },
+    ref
+  ) => {
+    const inputSize = sizes[size];
+    return (
+      <input
+        ref={ref}
+        type={inputType}
+        {...props}
+        className={`${inputSize} ${className} shadow appearance-none border rounded text-gray-700 leading-tight focus:outline-none focus:ring`}
+      ></input>
+    );
+  }
+);
