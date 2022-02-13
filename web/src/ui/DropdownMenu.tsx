@@ -19,22 +19,34 @@ export const DropdownMenuItem: React.FC<DropdownMenuItemProps> = ({
     </p>
   );
 };
-
 export const DropdownMenu = forwardRef<any, DropdropMenuProps>((props, ref) => {
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-      }}
-      animate={{
-        opacity: 1,
-      }}
+    <div
       ref={ref}
       {...props}
       className="flex flex-col rounded absolute border border-borderColor shadow-lg bg-white w-20 select-none z-10"
       onClick={(e) => e.stopPropagation()}
     >
       {props.children}
-    </motion.div>
+    </div>
   );
 });
+
+// export const DropdownMenu = forwardRef<any, DropdropMenuProps>((props, ref) => {
+//   return (
+//     <motion.div
+//       initial={{
+//         opacity: 0,
+//       }}
+//       animate={{
+//         opacity: 1,
+//       }}
+//       ref={ref}
+//       {...props}
+//       className="flex flex-col rounded absolute border border-borderColor shadow-lg bg-white w-20 select-none z-10"
+//       onClick={(e) => e.stopPropagation()}
+//     >
+//       {props.children}
+//     </motion.div>
+//   );
+// });

@@ -1,8 +1,8 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { Header } from "./Header.stories";
-import { ClassListItem } from "../ui/list/ClassListItem";
-import { TeacherClassView, StudentClassView } from "./ClassListItem.stories";
-import { Input } from "../ui/Input";
+import { Header } from "../Header.stories";
+import { ClassListItem } from "../../ui/list/ClassListItem";
+import { TeacherClassView, StudentClassView } from "../ClassListItem.stories";
+import { Input } from "../../ui/Input";
 
 function MainScreen({ classes }: any) {
   return (
