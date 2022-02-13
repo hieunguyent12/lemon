@@ -52,7 +52,11 @@ const TeacherContent: React.FC<StudentListItemProps> = ({
   return (
     <>
       <p>{studentName}</p>
-      <p className={`${gradeColor}`}>{grade}%</p>
+      {grade ? (
+        <p className={`${gradeColor}`}>{grade}%</p>
+      ) : (
+        <p className="text-muted">No Grade</p>
+      )}
       <p className="text-muted">{email}</p>
       <span
         className="hover:bg-gray-300 rounded-md py-1 relative"
