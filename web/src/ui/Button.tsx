@@ -9,7 +9,7 @@ const colors = {
 const textColors = {
   primary: "text-white",
   secondary: "text-primary-600",
-  accent: "text-primary-600",
+  accent: "text-muted",
 };
 
 const sizes = {
@@ -45,7 +45,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       <span className={`flex items-center ${textColor}`}>
-        {icon && <span className={`mr-2 items-center`}>{icon}</span>}
+        {icon && <span className={`mr-1 items-center`}>{icon}</span>}
         {children}
       </span>
     </button>

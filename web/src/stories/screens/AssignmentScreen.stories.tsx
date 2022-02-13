@@ -19,7 +19,7 @@ function AssignmentsScreen({ assignments }: any) {
   return (
     <div>
       <Header />
-      <div className="flex items-center mt-5">
+      <div className="flex flex-col mt-5">
         <Select options={options} defaultValue={options[0]} />
       </div>
       <div className="flex justify-between items-center mt-5 mb-2">

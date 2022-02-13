@@ -17,7 +17,7 @@ export const StudentGradeListItem: React.FC<StudentGradeListItemProps> = ({
   grade,
 }) => {
   return (
-    <ListItem>
+    <ListItem isClickable={false}>
       <TeacherContent studentName={studentName} grade={grade} />
     </ListItem>
   );
@@ -58,7 +58,7 @@ const TeacherContent: React.FC<StudentGradeListItemProps> = ({
           )}
         </div>
         <span
-          className="hover:bg-gray-300 rounded-md py-1 relative"
+          className="hover:bg-gray-300 rounded-md py-1 relative cursor-pointer"
           ref={(ref) => {
             setReferenceElement(ref);
             popperRef.current = ref;

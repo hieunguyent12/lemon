@@ -4,6 +4,8 @@ import Select from "react-select";
 import { Header } from "../Header.stories";
 import { StudentGradeListItem } from "../../ui/list/StudentGradeListItem";
 import { Input } from "../../ui/Input";
+import { Button } from "../../ui/Button";
+import LeftArrow from "../../icons/LeftArrow";
 
 const options = [
   { value: "1", label: "AP Lang" },
@@ -15,7 +17,18 @@ function AssignmentDetailScreen({ students }: any) {
   return (
     <div>
       <Header />
-      <div className="flex items-center mt-5">
+      <div className="flex flex-col justify-center mt-5">
+        <Button
+          variant="accent"
+          size="small"
+          className="mb-2 w-48 relative "
+          icon={<LeftArrow className="text-muted" />}
+          style={{
+            right: "20px",
+          }}
+        >
+          View all assignments
+        </Button>
         <Select options={options} defaultValue={options[0]} />
       </div>
       <div className="flex justify-between items-center mt-5 mb-2">
