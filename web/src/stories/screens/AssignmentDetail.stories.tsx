@@ -2,11 +2,7 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import Select from "react-select";
 
 import { Header } from "../Header.stories";
-import { AssignmentListItem } from "../../ui/list/AssignmentListItem";
-import {
-  TeacherAssignmentView,
-  StudentAssignmentView,
-} from "../AssignmentListItem.stories";
+import { StudentGradeListItem } from "../../ui/list/StudentGradeListItem";
 import { Input } from "../../ui/Input";
 
 const options = [
@@ -15,7 +11,7 @@ const options = [
   { value: "3", label: "Weight training 3" },
 ];
 
-function AssignmentsScreen({ assignments }: any) {
+function AssignmentDetailScreen({ students }: any) {
   return (
     <div>
       <Header />
@@ -23,19 +19,19 @@ function AssignmentsScreen({ assignments }: any) {
         <Select options={options} defaultValue={options[0]} />
       </div>
       <div className="flex justify-between items-center mt-5 mb-2">
-        <p className="text-xs text-muted">MY ASSIGNMENTS</p>
+        <p className="text-xs text-muted">STUDENTS GRADES</p>
         <Input placeholder="Search" size="small" />
       </div>
-      {assignments.map((assignment: any) => (
-        <AssignmentListItem {...assignment} />
+      {students.map((student: any) => (
+        <StudentGradeListItem {...student} />
       ))}
     </div>
   );
 }
 
 export default {
-  title: "Screens/Assignments Screen",
-  component: AssignmentsScreen,
+  title: "Screens/Assignment Detail Screen",
+  component: AssignmentDetailScreen,
   decorators: [
     (Story) => (
       <div
@@ -49,41 +45,32 @@ export default {
       </div>
     ),
   ],
-} as ComponentMeta<typeof AssignmentsScreen>;
+} as ComponentMeta<typeof AssignmentDetailScreen>;
 
-const Template: ComponentStory<typeof AssignmentsScreen> = (args) => (
-  <AssignmentsScreen {...args} />
+const Template: ComponentStory<typeof AssignmentDetailScreen> = (args) => (
+  <AssignmentDetailScreen {...args} />
 );
 
 export const TeacherPOV = Template.bind({});
 
 TeacherPOV.args = {
-  assignments: [
+  students: [
     {
-      ...TeacherAssignmentView.args,
+      studentName: "Hieu Nguyen",
+      grade: 90,
     },
-    {
-      ...TeacherAssignmentView.args,
-      _className: "AP ENG LANG & COMP",
-    },
-    {
-      ...TeacherAssignmentView.args,
-    },
-  ],
-};
 
-export const StudentPOV = Template.bind({});
-
-StudentPOV.args = {
-  assignments: [
     {
-      ...StudentAssignmentView.args,
+      studentName: "John Doe",
+      grade: 50,
     },
     {
-      ...StudentAssignmentView.args,
+      studentName: "Kevin Wang",
+      grade: null,
     },
     {
-      ...StudentAssignmentView.args,
+      studentName: "Justin Thomas",
+      grade: 78,
     },
   ],
 };
