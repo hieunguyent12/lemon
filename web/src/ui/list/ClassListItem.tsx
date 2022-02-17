@@ -73,10 +73,15 @@ const TeacherContent: React.FC<
 
   return (
     <>
-      <p>{_className}</p>
-      <p className="text-muted text-sm">{getOrdinalSuffix(period)} period</p>
-      <p className="text-muted text-sm">{studentCount} students</p>
-      <p className="text-muted text-sm">Room {roomNumber}</p>
+      <div className="w-48">
+        <p>{_className}</p>
+      </div>
+      <div className="flex items-center justify-evenly w-96">
+        <p className="text-muted text-sm">{getOrdinalSuffix(period)} period</p>
+        <p className="text-muted text-sm">{studentCount} students</p>
+        <p className="text-muted text-sm">Room {roomNumber}</p>
+      </div>
+
       <span
         className="hover:bg-gray-300 rounded-md py-1 relative"
         ref={(ref) => {

@@ -20,6 +20,12 @@ module.exports = {
       borderColor: {
         borderColor: "#f3f4f6",
       },
+      width: {
+        mainContent: "55rem",
+      },
+      maxWidth: {
+        mainContent: "55rem",
+      },
     },
   },
   variants: {

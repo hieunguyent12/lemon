@@ -1,13 +1,13 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import Select from "react-select";
 
-import { Header } from "../Header.stories";
 import { AssignmentListItem } from "../../ui/list/AssignmentListItem";
 import {
   TeacherAssignmentView,
   StudentAssignmentView,
 } from "../AssignmentListItem.stories";
 import { Input } from "../../ui/Input";
+import { MySidebar } from "../Sidebar.stories";
 
 const options = [
   { value: "1", label: "AP Lang" },
@@ -18,7 +18,6 @@ const options = [
 function AssignmentsScreen({ assignments }: any) {
   return (
     <div>
-      <Header />
       <div className="flex flex-col mt-5">
         <Select options={options} defaultValue={options[0]} />
       </div>
@@ -45,6 +44,7 @@ export default {
           justifyContent: "center",
         }}
       >
+        <MySidebar />
         <Story />
       </div>
     ),

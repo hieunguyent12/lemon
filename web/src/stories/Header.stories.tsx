@@ -6,25 +6,13 @@ import { AvatarHeader } from "../ui/AvatarHeader";
 import { Button } from "../ui/Button";
 import { DropdownMenu, DropdownMenuItem } from "../ui/DropdownMenu";
 import { useOutsideClick } from "../hooks/useOutsideClick";
+import { useDropdownMenu } from "../hooks/useDropdownMenu";
 
 export function Header() {
   const [showMenu, setShowMenu] = useState(false);
-  const [referenceElement, setReferenceElement] = useState<any>(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    modifiers: [
-      {
-        name: "offset",
-        enabled: true,
-        options: {
-          offset: [-12, 5],
-        },
-      },
-    ],
+  const { setRefs, setPopperElement, styles, attributes } = useDropdownMenu({
+    outsideClickCallback: () => setShowMenu(false),
   });
-  const popperRef = useRef<any>();
-
-  useOutsideClick(popperRef, () => setShowMenu(false));
 
   return (
     <div
@@ -35,13 +23,7 @@ export function Header() {
       }}
     >
       <AvatarHeader name="Hieu Nguyen" />
-      <div
-        ref={(ref) => {
-          setReferenceElement(ref);
-          popperRef.current = ref;
-        }}
-        className="relative"
-      >
+      <div ref={setRefs} className="relative">
         <Button
           variant="primary"
           size="small"

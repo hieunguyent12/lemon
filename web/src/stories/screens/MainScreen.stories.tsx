@@ -1,15 +1,73 @@
+import { useState } from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { Header } from "../Header.stories";
+import { useMediaQuery } from "react-responsive";
+
 import { ClassListItem } from "../../ui/list/ClassListItem";
 import { TeacherClassView, StudentClassView } from "../ClassListItem.stories";
 import { Input } from "../../ui/Input";
+import { MySidebar } from "../Sidebar.stories";
+import { Topbar, TopbarItem } from "../../ui/Topbar";
+import { AvatarPlaceholder } from "../../ui/AvatarPlaceholder";
+import HomeIcon from "../../icons/HomeIcon";
+import PlusIcon from "../../icons/PlusIcon";
+import { Menubar, MenubarItem } from "../../ui/Menubar";
+import { useDropdownMenu } from "../../hooks/useDropdownMenu";
+import { DropdownMenu, DropdownMenuItem } from "../../ui/DropdownMenu";
 
 function MainScreen({ classes }: any) {
+  const [showMenu, setShowMenu] = useState(false);
+
+  const { setRefs, setPopperElement, styles, attributes } = useDropdownMenu({
+    outsideClickCallback: () => setShowMenu(false),
+    menuPlacement: "right-start",
+  });
+
   return (
-    <div>
-      <Header />
+    <div className="w-11/12 sm:max-w-mainContent sm:ml-12">
+      <Menubar>
+        {(isMobile) => (
+          <>
+            <MenubarItem>
+              <AvatarPlaceholder />
+            </MenubarItem>
+            <MenubarItem
+              className={
+                isMobile
+                  ? "flex items-center text-muted"
+                  : "flex flex-col items-center justify-center text-muted"
+              }
+              style={{
+                marginTop: isMobile ? "0px" : "200px",
+              }}
+            >
+              <HomeIcon className="mr-4 sm:mr-0 opacity-70 hover:opacity-100 cursor-pointer" />
+              <div
+                className="sm:mt-6"
+                ref={setRefs}
+                onClick={() => setShowMenu(!showMenu)}
+              >
+                <PlusIcon className="opacity-70 hover:opacity-100 cursor-pointer" />
+                {showMenu && (
+                  <DropdownMenu
+                    ref={setPopperElement}
+                    style={{
+                      ...styles.popper,
+                      width: "75px",
+                      maxWidth: "75px",
+                    }}
+                    {...attributes.popper}
+                  >
+                    <DropdownMenuItem>Action 1</DropdownMenuItem>
+                    <DropdownMenuItem>Action 2</DropdownMenuItem>
+                  </DropdownMenu>
+                )}
+              </div>
+            </MenubarItem>
+          </>
+        )}
+      </Menubar>
       <div className="flex justify-between items-center mt-5 mb-2">
-        <p className="text-xs text-muted">MY CLASSES</p>
+        <p className="text-muted select-none">MY CLASSES</p>
         <Input placeholder="Search" size="small" />
       </div>
       {classes.map((classItem: any) => (
