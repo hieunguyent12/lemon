@@ -2,17 +2,17 @@ import { useState } from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { useMediaQuery } from "react-responsive";
 
-import { ClassListItem } from "../../ui/list/ClassListItem";
+import { ClassListItem } from "../../components/list/ClassListItem";
 import { TeacherClassView, StudentClassView } from "../ClassListItem.stories";
-import { Input } from "../../ui/Input";
+import { Input } from "../../components/Input";
 import { MySidebar } from "../Sidebar.stories";
-import { Topbar, TopbarItem } from "../../ui/Topbar";
-import { AvatarPlaceholder } from "../../ui/AvatarPlaceholder";
+import { Topbar, TopbarItem } from "../../components/Topbar";
+import { AvatarPlaceholder } from "../../components/AvatarPlaceholder";
 import HomeIcon from "../../icons/HomeIcon";
 import PlusIcon from "../../icons/PlusIcon";
-import { Menubar, MenubarItem } from "../../ui/Menubar";
+import { Menubar, MenubarItem } from "../../components/Menubar";
 import { useDropdownMenu } from "../../hooks/useDropdownMenu";
-import { DropdownMenu, DropdownMenuItem } from "../../ui/DropdownMenu";
+import { DropdownMenu, DropdownMenuItem } from "../../components/DropdownMenu";
 
 function MainScreen({ classes }: any) {
   const [showMenu, setShowMenu] = useState(false);

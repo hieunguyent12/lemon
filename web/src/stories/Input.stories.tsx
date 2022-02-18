@@ -1,4 +1,4 @@
-import { Input, InputProps } from "../ui/Input";
+import { Input, InputProps } from "../components/Input";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 export default {

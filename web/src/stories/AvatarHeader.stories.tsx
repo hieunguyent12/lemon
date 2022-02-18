@@ -1,5 +1,5 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { AvatarHeader, AvatarHeaderProps } from "../ui/AvatarHeader";
+import { AvatarHeader, AvatarHeaderProps } from "../components/AvatarHeader";
 
 export default {
   component: AvatarHeader,

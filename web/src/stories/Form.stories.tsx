@@ -1,7 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { Button, ButtonProps } from "../ui/Button";
-import { Input, InputProps } from "../ui/Input";
+import { Button, ButtonProps } from "../components/Button";
+import { Input, InputProps } from "../components/Input";
 
 function Form() {
   return (

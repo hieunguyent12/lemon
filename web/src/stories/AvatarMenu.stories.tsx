@@ -1,5 +1,5 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { AvatarMenu } from "../ui/AvatarMenu";
+import { AvatarMenu } from "../components/AvatarMenu";
 
 export default {
   component: AvatarMenu,

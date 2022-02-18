@@ -2,9 +2,9 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { useState, useRef } from "react";
 import { usePopper } from "react-popper";
 
-import { AvatarHeader } from "../ui/AvatarHeader";
-import { Button } from "../ui/Button";
-import { DropdownMenu, DropdownMenuItem } from "../ui/DropdownMenu";
+import { AvatarHeader } from "../components/AvatarHeader";
+import { Button } from "../components/Button";
+import { DropdownMenu, DropdownMenuItem } from "../components/DropdownMenu";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import { useDropdownMenu } from "../hooks/useDropdownMenu";
 

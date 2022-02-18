@@ -1,6 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { StudentListItem } from "../ui/list/StudentListItem";
+import { StudentListItem } from "../components/list/StudentListItem";
 
 export default {
   component: StudentListItem,

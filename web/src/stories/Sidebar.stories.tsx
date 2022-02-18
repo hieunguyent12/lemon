@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
-import { Sidebar, SidebarItem } from "../ui/Sidebar";
-import { AvatarPlaceholder } from "../ui/AvatarPlaceholder";
+import { Sidebar, SidebarItem } from "../components/Sidebar";
+import { AvatarPlaceholder } from "../components/AvatarPlaceholder";
 import HomeIcon from "../icons/HomeIcon";
 import PlusIcon from "../icons/PlusIcon";
 

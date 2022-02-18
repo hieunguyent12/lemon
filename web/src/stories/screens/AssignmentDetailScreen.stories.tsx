@@ -2,9 +2,9 @@ import { ComponentStory, ComponentMeta } from "@storybook/react";
 import Select from "react-select";
 
 import { Header } from "../Header.stories";
-import { StudentGradeListItem } from "../../ui/list/StudentGradeListItem";
-import { Input } from "../../ui/Input";
-import { Button } from "../../ui/Button";
+import { StudentGradeListItem } from "../../components/list/StudentGradeListItem";
+import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
 import LeftArrow from "../../icons/LeftArrow";
 
 const options = [

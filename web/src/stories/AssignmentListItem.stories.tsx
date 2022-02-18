@@ -1,6 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { AssignmentListItem } from "../ui/list/AssignmentListItem";
+import { AssignmentListItem } from "../components/list/AssignmentListItem";
 
 export default {
   component: AssignmentListItem,

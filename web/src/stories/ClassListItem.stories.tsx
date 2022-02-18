@@ -1,6 +1,6 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { ClassListItem } from "../ui/list/ClassListItem";
+import { ClassListItem } from "../components/list/ClassListItem";
 
 export default {
   component: ClassListItem,

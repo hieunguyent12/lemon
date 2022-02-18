@@ -2,9 +2,9 @@ import { useRef, useState } from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 import { useOutsideClick } from "../hooks/useOutsideClick";
-import { Modal } from "../ui/Modal";
-import { Input } from "../ui/Input";
-import { Button } from "../ui/Button";
+import { Modal } from "../components/Modal";
+import { Input } from "../components/Input";
+import { Button } from "../components/Button";
 
 export default {
   title: "Modal",

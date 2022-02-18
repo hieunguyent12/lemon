@@ -1,12 +1,12 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import Select from "react-select";
 
-import { AssignmentListItem } from "../../ui/list/AssignmentListItem";
+import { AssignmentListItem } from "../../components/list/AssignmentListItem";
 import {
   TeacherAssignmentView,
   StudentAssignmentView,
 } from "../AssignmentListItem.stories";
-import { Input } from "../../ui/Input";
+import { Input } from "../../components/Input";
 import { MySidebar } from "../Sidebar.stories";
 
 const options = [
