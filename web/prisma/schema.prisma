@@ -39,20 +39,70 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-}
-
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model User {
+  id            String       @id @default(cuid())
+  name          String?
+  email         String?      @unique
+  emailVerified DateTime?
+  image         String?
+  isTeacher     Boolean?
+  accounts      Account[]
+  sessions      Session[]
+  classes       Class[]
+  enrollments   Enrollment[]
+  assignments   Assignment[]
+  grades        Grade[]
+}
+
+model Class {
+  id                  String                @id @default(cuid())
+  name                String
+  image_url           String?
+  subject             String?
+  teacher             User                  @relation(fields: [teacherID], references: [id], onDelete: Cascade)
+  teacherID           String
+  students            Enrollment[]
+  classes_assignments Classes_Assignments[]
+}
+
+model Enrollment {
+  id        String @id @default(cuid())
+  student   User   @relation(fields: [studentID], references: [id], onDelete: Cascade)
+  studentID String
+  class     Class  @relation(fields: [classID], references: [id], onDelete: Cascade)
+  classID   String
+}
+
+model Assignment {
+  id                  String                @id @default(cuid())
+  name                String
+  teacher             User                  @relation(fields: [teacherID], references: [id], onDelete: Cascade)
+  teacherID           String
+  classes_assignments Classes_Assignments[]
+  grades              Grade[]
+}
+
+model Classes_Assignments {
+  id           String     @id @default(cuid())
+  assignment   Assignment @relation(fields: [assignmentID], references: [id], onDelete: Cascade)
+  assignmentID String
+  class        Class      @relation(fields: [classID], references: [id], onDelete: Cascade)
+  classID      String
+}
+
+model Grade {
+  id           String     @id @default(cuid())
+  assignment   Assignment @relation(fields: [assignmentID], references: [id], onDelete: Cascade)
+  assignmentID String
+  student      User       @relation(fields: [studentID], references: [id], onDelete: Cascade)
+  studentID    String
+  grade        Int
 }
