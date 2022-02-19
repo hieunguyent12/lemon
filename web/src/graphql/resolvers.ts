@@ -1,7 +1,9 @@
+import { prisma } from "../prisma";
+
 const resolvers = {
   Query: {
     users(parent: any, args: any, context: any) {
-      return [{ name: "Next js" }];
+      return prisma.user.findMany();
     },
   },
 };

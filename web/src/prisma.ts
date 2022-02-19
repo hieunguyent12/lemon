@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 // This piece of code just tells Typescript that the "prisma" object exist in the "global" object
 // It won't actually get compiled to javascript
 // Not sure if this is necessary but https://github.com/m-abdelwahab/nextjs-prisma-workshop/blob/main/lib/prisma.ts
+// https://www.prisma.io/docs/support/help-articles/nextjs-prisma-client-dev-practices
 declare global {
   var prisma: PrismaClient | undefined;
 }

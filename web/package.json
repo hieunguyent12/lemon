@@ -12,6 +12,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "@apollo/client": "^3.5.9",
     "@popperjs/core": "^2.11.2",
     "@prisma/client": "^3.8.1",
     "apollo-server": "^3.6.2",
