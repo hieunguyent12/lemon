@@ -1,5 +1,6 @@
 import { ApolloServer } from "apollo-server-micro";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getToken } from "next-auth/jwt";
 import resolvers from "../../graphql/resolvers";
 // @ts-ignore
 import typeDefs from "../../graphql/schema.graphql";
@@ -18,7 +19,18 @@ const cors = initCORS({
   origins: ALLOWED_ORIGINS,
 });
 
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
+const jwt_secret = process.env.JWT_SECRET;
+
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: async ({ req }) => {
+    const user = await getToken({ req, secret: jwt_secret });
+    return {
+      user,
+    };
+  },
+});
 
 const startServer = apolloServer.start();
 

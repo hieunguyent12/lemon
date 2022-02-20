@@ -1,5 +1,6 @@
 type Query {
   user: User
+  classes: [Class]
 }
 
 type Mutation {
@@ -22,7 +23,7 @@ type Class {
   id: String!
   name: String
   image_url: String
-  teacherID: String!
+  teacherID: String
   subject: String
 }
 

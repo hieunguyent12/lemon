@@ -27,7 +27,7 @@ export type Class = {
   image_url?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   subject?: Maybe<Scalars['String']>;
-  teacherID: Scalars['String'];
+  teacherID?: Maybe<Scalars['String']>;
 };
 
 export type Grade = {
@@ -52,6 +52,7 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  classes?: Maybe<Array<Maybe<Class>>>;
   user?: Maybe<User>;
 };
 
@@ -173,7 +174,7 @@ export type ClassResolvers<ContextType = any, ParentType extends ResolversParent
   image_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   subject?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  teacherID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  teacherID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -190,6 +191,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  classes?: Resolver<Maybe<Array<Maybe<ResolversTypes['Class']>>>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };
 

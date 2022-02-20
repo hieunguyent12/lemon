@@ -7,12 +7,12 @@ import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
 import Head from "next/head";
 import { Session } from "next-auth";
+import { Loader } from "@mantine/core";
 
 import { ApolloProvider } from "@apollo/client";
 
 import APOLLO_CLIENT from "../../apollo-client";
-import { PageComponent } from "../types";
-import { ExtendPageComponent } from "./newuser";
+import AppLayout from "../components/AppLayout";
 
 interface AuthProps {
   isNewUserPage: boolean;
@@ -20,7 +20,7 @@ interface AuthProps {
 }
 
 function Auth({ children, isNewUserPage }: AuthProps) {
-  const { data: session, status } = useSession({ required: true });
+  const { data: session } = useSession({ required: true });
   const router = useRouter();
 
   const isUser = !!session?.user;
@@ -52,12 +52,27 @@ function Auth({ children, isNewUserPage }: AuthProps) {
 
   // If authenticated, return the content
   if (isUser) {
+    if (!isNewUserPage) {
+      return <AppLayout>hi</AppLayout>;
+    }
     return children(session);
   }
 
   // Session is being fetched, or no user.
   // If no user, useEffect() will redirect.
-  return <div>Loading...</div>;
+  return (
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Loader size="lg" />
+    </div>
+  );
 }
 
 function Lemon({ Component, pageProps: { session, ...pageProps } }: AppProps) {

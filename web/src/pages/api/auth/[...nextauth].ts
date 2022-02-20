@@ -3,12 +3,12 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "../../../prisma";
 
+const jwt_secret = process.env.JWT_SECRET;
+
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async jwt({ token, account, isNewUser }) {
-      // TODO check database to check for isNewUser
-
       if (!token.sub) return token;
 
       const user = await prisma.user.findUnique({
@@ -23,20 +23,15 @@ export default NextAuth({
         } else {
           token.isNewUser = false;
         }
+        token.role = user.isTeacher ? "teacher" : "student";
       }
-      // if (isNewUser) {
-      //   token.isNewUser = true;
-      // } else if (typeof isNewUser === "boolean" && !isNewUser) {
-      //   // TODO change this later because during the process of supplying info, the user could close the tab
-      //   // when that happens and the user signs in again we have to ask the db to check if they have supplied those info or not
-      //   token.isNewUser = false;
-      // }
 
       return token;
     },
     async session({ session, token }) {
       session.isNewUser = token.isNewUser;
       session.userId = token.sub;
+      session.role = token.role;
       return session;
     },
   },
@@ -52,5 +47,5 @@ export default NextAuth({
   session: {
     strategy: "jwt",
   },
-  secret: "HIIHIHIHIHI",
+  secret: jwt_secret,
 });

@@ -80,8 +80,11 @@ const NewUser: ExtendPageComponent<Props> = ({ session }) => {
         color: "green",
         autoClose: false,
       });
-      // use this instead of next/router to make sure that our session is updated properly
-      document.location.href = "/home";
+
+      setTimeout(() => {
+        // use this instead of next/router to make sure that our session is updated properly
+        document.location.href = "/home";
+      }, 1000);
     }
   }, [error, data]);
 
