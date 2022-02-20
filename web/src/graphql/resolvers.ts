@@ -1,9 +1,30 @@
 import { prisma } from "../prisma";
+import { Resolvers } from "./generated";
 
-const resolvers = {
+const resolvers: Resolvers = {
   Query: {
-    users(parent: any, args: any, context: any) {
-      return prisma.user.findMany();
+    user(parent, args, context) {
+      return {
+        id: "hi",
+      };
+    },
+  },
+  Mutation: {
+    updateUser(_, args) {
+      const { userId, name, role } = args;
+
+      let isTeacher = role === "teacher";
+
+      return prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          profileName: name,
+          isTeacher,
+          isNewUser: false,
+        },
+      });
     },
   },
 };

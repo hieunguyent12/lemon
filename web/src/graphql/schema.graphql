@@ -1,8 +1,40 @@
 type Query {
-  users: [User!]!
+  user: User
+}
+
+type Mutation {
+  updateUser(userId: String!, name: String, role: String): User
 }
 
 type User {
+  id: String!
   name: String
-  age: Int
+  email: String
+  profileName: String
+  isTeacher: Boolean
+  isNewUser: Boolean
+  classes: [Class]
+  assignments: [Assignment]
+  grades: [Grade]
+}
+
+type Class {
+  id: String!
+  name: String
+  image_url: String
+  teacherID: String!
+  subject: String
+}
+
+type Assignment {
+  id: String!
+  name: String
+  teacherID: String!
+}
+
+type Grade {
+  id: String!
+  assignmentID: String
+  studentID: String
+  grade: Int
 }

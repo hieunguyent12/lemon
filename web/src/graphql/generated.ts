@@ -4,6 +4,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -13,15 +14,58 @@ export type Scalars = {
   Float: number;
 };
 
+export type Assignment = {
+  __typename?: 'Assignment';
+  id: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  teacherID: Scalars['String'];
+};
+
+export type Class = {
+  __typename?: 'Class';
+  id: Scalars['String'];
+  image_url?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  subject?: Maybe<Scalars['String']>;
+  teacherID: Scalars['String'];
+};
+
+export type Grade = {
+  __typename?: 'Grade';
+  assignmentID?: Maybe<Scalars['String']>;
+  grade?: Maybe<Scalars['Int']>;
+  id: Scalars['String'];
+  studentID?: Maybe<Scalars['String']>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  updateUser?: Maybe<User>;
+};
+
+
+export type MutationUpdateUserArgs = {
+  name?: InputMaybe<Scalars['String']>;
+  role?: InputMaybe<Scalars['String']>;
+  userId: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
-  users: Array<User>;
+  user?: Maybe<User>;
 };
 
 export type User = {
   __typename?: 'User';
-  age?: Maybe<Scalars['Int']>;
+  assignments?: Maybe<Array<Maybe<Assignment>>>;
+  classes?: Maybe<Array<Maybe<Class>>>;
+  email?: Maybe<Scalars['String']>;
+  grades?: Maybe<Array<Maybe<Grade>>>;
+  id: Scalars['String'];
+  isNewUser?: Maybe<Scalars['Boolean']>;
+  isTeacher?: Maybe<Scalars['Boolean']>;
   name?: Maybe<Scalars['String']>;
+  profileName?: Maybe<Scalars['String']>;
 };
 
 
@@ -93,8 +137,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Assignment: ResolverTypeWrapper<Assignment>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Class: ResolverTypeWrapper<Class>;
+  Grade: ResolverTypeWrapper<Grade>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   User: ResolverTypeWrapper<User>;
@@ -102,24 +150,67 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Assignment: Assignment;
   Boolean: Scalars['Boolean'];
+  Class: Class;
+  Grade: Grade;
   Int: Scalars['Int'];
+  Mutation: {};
   Query: {};
   String: Scalars['String'];
   User: User;
 };
 
+export type AssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Assignment'] = ResolversParentTypes['Assignment']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  teacherID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ClassResolvers<ContextType = any, ParentType extends ResolversParentTypes['Class'] = ResolversParentTypes['Class']> = {
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  image_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  subject?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  teacherID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GradeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Grade'] = ResolversParentTypes['Grade']> = {
+  assignmentID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  grade?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  studentID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'userId'>>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  age?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  assignments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Assignment']>>>, ParentType, ContextType>;
+  classes?: Resolver<Maybe<Array<Maybe<ResolversTypes['Class']>>>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  grades?: Resolver<Maybe<Array<Maybe<ResolversTypes['Grade']>>>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isNewUser?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  isTeacher?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  profileName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
+  Assignment?: AssignmentResolvers<ContextType>;
+  Class?: ClassResolvers<ContextType>;
+  Grade?: GradeResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
