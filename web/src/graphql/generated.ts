@@ -16,6 +16,8 @@ export type Scalars = {
 
 export type Assignment = {
   __typename?: 'Assignment';
+  assignmentID: Scalars['String'];
+  classID: Scalars['String'];
   id: Scalars['String'];
   name?: Maybe<Scalars['String']>;
   teacherID: Scalars['String'];
@@ -23,6 +25,7 @@ export type Assignment = {
 
 export type Class = {
   __typename?: 'Class';
+  assignments?: Maybe<Array<Maybe<Assignment>>>;
   id: Scalars['String'];
   image_url?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -59,8 +62,14 @@ export type MutationUpdateUserArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  class?: Maybe<Class>;
   classes?: Maybe<Array<Maybe<Class>>>;
   user?: Maybe<User>;
+};
+
+
+export type QueryClassArgs = {
+  id: Scalars['String'];
 };
 
 export type User = {
@@ -170,6 +179,8 @@ export type ResolversParentTypes = {
 };
 
 export type AssignmentResolvers<ContextType = any, ParentType extends ResolversParentTypes['Assignment'] = ResolversParentTypes['Assignment']> = {
+  assignmentID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  classID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   teacherID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -177,6 +188,7 @@ export type AssignmentResolvers<ContextType = any, ParentType extends ResolversP
 };
 
 export type ClassResolvers<ContextType = any, ParentType extends ResolversParentTypes['Class'] = ResolversParentTypes['Class']> = {
+  assignments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Assignment']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -199,6 +211,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  class?: Resolver<Maybe<ResolversTypes['Class']>, ParentType, ContextType, RequireFields<QueryClassArgs, 'id'>>;
   classes?: Resolver<Maybe<Array<Maybe<ResolversTypes['Class']>>>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
 };

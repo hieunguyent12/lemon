@@ -12,7 +12,8 @@ import { Loader } from "@mantine/core";
 import { ApolloProvider } from "@apollo/client";
 
 import APOLLO_CLIENT from "../../apollo-client";
-import AppLayout from "../components/AppContainer";
+import AppContainer from "../components/AppContainer";
+import { AppContextProvider } from "../context/AppContext";
 
 interface AuthProps {
   isNewUserPage: boolean;
@@ -33,10 +34,16 @@ function Auth({ children, isNewUserPage }: AuthProps) {
           router.replace("/newuser");
         }
       } else {
-        router.replace("/home");
+        if (isNewUserPage) {
+          router.replace("/home");
+        }
       }
     }
-  }, [session]);
+  }, [session, isNewUserPage]);
+
+  // useEffect(() => {
+
+  // }, [isNewUserPage, session])
 
   // If we go to a page that is not /newuser and the user is new, we render null for that page and then redirect to /newuser
   // this is to prevent flashes of the page's content
@@ -53,7 +60,7 @@ function Auth({ children, isNewUserPage }: AuthProps) {
   // If authenticated, return the content
   if (isUser) {
     if (!isNewUserPage) {
-      return <AppLayout session={session}>hi</AppLayout>;
+      return <AppContainer session={session}>{children(session)}</AppContainer>;
     }
     return children(session);
   }
@@ -106,7 +113,9 @@ function Lemon({ Component, pageProps: { session, ...pageProps } }: AppProps) {
               colorScheme: "light",
             }}
           >
-            <NotificationsProvider>{renderComponent()}</NotificationsProvider>
+            <NotificationsProvider>
+              <AppContextProvider>{renderComponent()}</AppContextProvider>
+            </NotificationsProvider>
           </MantineProvider>
         </ApolloProvider>
       </SessionProvider>

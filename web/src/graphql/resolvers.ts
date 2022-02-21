@@ -2,6 +2,25 @@ import { JWT } from "next-auth/jwt";
 import { prisma } from "../prisma";
 import { Resolvers } from "./generated";
 
+function parseClassResponse(_class: any) {
+  const newClass = {
+    ..._class,
+    assignments: _class.classes_assignments,
+  };
+
+  delete newClass.classes_assignments;
+
+  newClass.assignments = newClass.assignments.map(
+    ({ assignment, ...others }: any) => ({
+      ...others,
+      name: assignment.name,
+      teacherID: assignment.teacherID,
+    })
+  );
+
+  return newClass;
+}
+
 type Context = {
   user: JWT;
 };
@@ -27,6 +46,7 @@ const resolvers: Resolvers<Context> = {
           },
         });
         return enrollments.map((enrollment) => ({
+          enrollmentId: enrollment.id,
           ...enrollment.class,
         }));
       } else {
@@ -37,6 +57,58 @@ const resolvers: Resolvers<Context> = {
           },
         });
       }
+    },
+    async class(_, args, context) {
+      const { user } = context;
+      const { id } = args;
+
+      if (user.role === "student" && user.sub) {
+        const enrollment = await prisma.enrollment.findUnique({
+          where: {
+            id,
+          },
+          include: {
+            class: {
+              include: {
+                classes_assignments: {
+                  include: {
+                    assignment: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (enrollment && enrollment.class) {
+          return parseClassResponse(enrollment.class);
+        } else {
+          return null;
+        }
+      }
+
+      if (user.role === "teacher" && user.sub) {
+        const _class = await prisma.class.findUnique({
+          where: {
+            id,
+          },
+          include: {
+            classes_assignments: {
+              include: {
+                assignment: true,
+              },
+            },
+          },
+        });
+
+        if (_class && _class.teacherID === user.sub) {
+          return parseClassResponse(_class);
+        } else {
+          return null;
+        }
+      }
+
+      return null;
     },
   },
   Mutation: {

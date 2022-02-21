@@ -24,6 +24,7 @@ import { Query, Class, MutationCreateClassArgs } from "../graphql/generated";
 import ClassList from "./class/ClassList";
 import ActionMenu from "./ActionMenu";
 import NewItemModalForm from "./NewItemModalForm";
+import { useAppContext } from "../context/AppContext";
 
 type Props = {
   children: React.ReactNode;
@@ -66,6 +67,9 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   const [modalType, setModalType] = useState<ModalType | "">("");
   const theme = useMantineTheme();
   const { classes: menuClasses } = useMenuStyles();
+  const { state: appContextState } = useAppContext();
+
+  const role = session.role;
 
   const { data, error, loading } = useQuery<Query>(GET_CLASSES);
   const [createClass, createClassResult] =
@@ -92,6 +96,71 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
     //     subject: "English",
     //   },
     // }).catch(() => {});
+  };
+
+  const hideBurgerMenu = () => setOpened(false);
+
+  const renderActions = () => {
+    if (role === "student") {
+      return (
+        <ActionMenu
+          control={
+            <Button
+              fullWidth
+              leftIcon={<PlusIcon />}
+              variant="gradient"
+              gradient={{ from: "grape", to: "pink", deg: 35 }}
+              onClick={() => setMenuOpened(!menuOpened)}
+            >
+              New
+            </Button>
+          }
+          menuClasses={menuClasses}
+          menuOpened={menuOpened}
+          setMenuOpened={setMenuOpened}
+          role={session.role}
+          onOpenModal={onOpenModal}
+        />
+      );
+    }
+    if (role === "teacher") {
+      return (
+        <Group>
+          <SegmentedControl
+            size="sm"
+            data={[
+              { label: "Classes", value: "class" },
+              { label: "Assignments", value: "assignment" },
+            ]}
+            // fullWidth
+            // classNames={menuClasses}
+            style={{
+              flexGrow: 1,
+            }}
+          />
+          <ActionMenu
+            control={
+              <Button
+                fullWidth
+                leftIcon={<PlusIcon />}
+                variant="gradient"
+                gradient={{ from: "grape", to: "pink", deg: 35 }}
+                onClick={() => setMenuOpened(!menuOpened)}
+              >
+                New
+              </Button>
+            }
+            menuClasses={menuClasses}
+            menuOpened={menuOpened}
+            setMenuOpened={setMenuOpened}
+            role={session.role}
+            onOpenModal={onOpenModal}
+          />
+        </Group>
+      );
+    }
+
+    return null;
   };
 
   return (
@@ -124,42 +193,18 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
               {loading && <p>Loading...</p>}
               {error && <p>Error...</p>}
 
-              <Navbar.Section mb={10}>
-                <Group>
-                  <SegmentedControl
-                    size="sm"
-                    data={[
-                      { label: "Classes", value: "class" },
-                      { label: "Assignments", value: "assignment" },
-                    ]}
-                  />
-                  <ActionMenu
-                    control={
-                      <Button
-                        fullWidth
-                        leftIcon={<PlusIcon />}
-                        variant="gradient"
-                        gradient={{ from: "grape", to: "pink", deg: 35 }}
-                        onClick={() => setMenuOpened(!menuOpened)}
-                      >
-                        New
-                      </Button>
-                    }
-                    menuClasses={menuClasses}
-                    menuOpened={menuOpened}
-                    setMenuOpened={setMenuOpened}
-                    role={session.role}
-                    onOpenModal={onOpenModal}
-                  />
-                </Group>
-              </Navbar.Section>
+              <Navbar.Section mb={10}>{renderActions()}</Navbar.Section>
               <Navbar.Section
                 grow
                 style={{
-                  overflowY: "scroll",
+                  overflowY: "auto",
                 }}
               >
-                <ClassList classes={data?.classes} />
+                <ClassList
+                  classes={data?.classes}
+                  role={session.role}
+                  hideBurgerMenu={hideBurgerMenu}
+                />
               </Navbar.Section>
               <Divider />
               <Navbar.Section>
@@ -186,7 +231,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                   color={theme.colors.gray[6]}
                   mr="xl"
                 />
-                {/* </MediaQuery> */}
+                {appContextState && appContextState.selectedClass.name}
               </div>
             </Header>
           </MediaQuery>
@@ -197,6 +242,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
               theme.colorScheme === "dark"
                 ? theme.colors.dark[8]
                 : theme.colors.gray[0],
+            padding: 0,
           },
         })}
       >
@@ -206,7 +252,13 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
             marginTop: "70px",
           }}
         >
-          <Text>Resize app to see responsive navbar in action</Text>
+          <div
+            style={{
+              position: "relative",
+            }}
+          >
+            {children}
+          </div>
         </MediaQuery>
       </AppShell>
 
