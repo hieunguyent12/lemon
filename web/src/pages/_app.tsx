@@ -12,7 +12,7 @@ import { Loader } from "@mantine/core";
 import { ApolloProvider } from "@apollo/client";
 
 import APOLLO_CLIENT from "../../apollo-client";
-import AppLayout from "../components/AppLayout";
+import AppLayout from "../components/AppContainer";
 
 interface AuthProps {
   isNewUserPage: boolean;
@@ -53,7 +53,7 @@ function Auth({ children, isNewUserPage }: AuthProps) {
   // If authenticated, return the content
   if (isUser) {
     if (!isNewUserPage) {
-      return <AppLayout>hi</AppLayout>;
+      return <AppLayout session={session}>hi</AppLayout>;
     }
     return children(session);
   }
