@@ -40,7 +40,14 @@ export type Grade = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createClass?: Maybe<Class>;
   updateUser?: Maybe<User>;
+};
+
+
+export type MutationCreateClassArgs = {
+  name: Scalars['String'];
+  subject?: InputMaybe<Scalars['String']>;
 };
 
 
@@ -187,6 +194,7 @@ export type GradeResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createClass?: Resolver<Maybe<ResolversTypes['Class']>, ParentType, ContextType, RequireFields<MutationCreateClassArgs, 'name'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'userId'>>;
 };
 

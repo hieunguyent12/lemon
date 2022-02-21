@@ -31,7 +31,7 @@ const resolvers: Resolvers<Context> = {
         }));
       } else {
         // just check for classes
-        return prisma.class.findMany({
+        return await prisma.class.findMany({
           where: {
             teacherID: user.sub,
           },
@@ -40,12 +40,12 @@ const resolvers: Resolvers<Context> = {
     },
   },
   Mutation: {
-    updateUser(_, args) {
+    async updateUser(_, args) {
       const { userId, name, role } = args;
 
       let isTeacher = role === "teacher";
 
-      return prisma.user.update({
+      return await prisma.user.update({
         where: {
           id: userId,
         },
@@ -53,6 +53,21 @@ const resolvers: Resolvers<Context> = {
           profileName: name,
           isTeacher,
           isNewUser: false,
+        },
+      });
+    },
+    async createClass(_, args, context) {
+      if (context.user.role === "student") return null;
+
+      if (!context.user.sub) return null;
+
+      const { name, subject = null } = args;
+
+      return await prisma.class.create({
+        data: {
+          name,
+          subject,
+          teacherID: context.user.sub,
         },
       });
     },

@@ -1,13 +1,15 @@
 import { Menu } from "@mantine/core";
 import { Dispatch, SetStateAction } from "react";
 
+import { ModalType } from "./AppContainer";
+
 type Props = {
   control: any;
-  menuClasses: Record<"root" | "track", string>;
+  menuClasses?: Record<"root", string>;
   menuOpened: boolean;
   setMenuOpened: Dispatch<SetStateAction<boolean>>;
   role: "student" | "teacher";
-  onNewClass: () => void;
+  onOpenModal: (type: ModalType) => void;
 };
 
 const ActionMenu: React.FC<Props> = ({
@@ -16,9 +18,8 @@ const ActionMenu: React.FC<Props> = ({
   menuOpened,
   setMenuOpened,
   role,
-  onNewClass,
+  onOpenModal,
 }) => {
-  console.log(role);
   return (
     <Menu
       control={control}
@@ -34,10 +35,12 @@ const ActionMenu: React.FC<Props> = ({
         <Menu.Item>Join class</Menu.Item>
       ) : (
         [
-          <Menu.Item key="1" onClick={onNewClass}>
+          <Menu.Item key="1" onClick={() => onOpenModal("class")}>
             New class
           </Menu.Item>,
-          <Menu.Item key="2">New assignment</Menu.Item>,
+          <Menu.Item key="2" onClick={() => onOpenModal("assignment")}>
+            New assignment
+          </Menu.Item>,
         ]
       )}
     </Menu>

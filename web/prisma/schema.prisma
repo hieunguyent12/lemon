@@ -108,3 +108,8 @@ model Grade {
   studentID    String
   grade        Int
 }
+
+model Test {
+  id   String @id @default(cuid())
+  name String
+}
