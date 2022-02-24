@@ -26,6 +26,7 @@ export type Assignment = {
 export type Class = {
   __typename?: 'Class';
   assignments?: Maybe<Array<Maybe<Assignment>>>;
+  enrollmentId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   image_url?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -189,6 +190,7 @@ export type AssignmentResolvers<ContextType = any, ParentType extends ResolversP
 
 export type ClassResolvers<ContextType = any, ParentType extends ResolversParentTypes['Class'] = ResolversParentTypes['Class']> = {
   assignments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Assignment']>>>, ParentType, ContextType>;
+  enrollmentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;

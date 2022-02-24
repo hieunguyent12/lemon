@@ -28,6 +28,7 @@ type Class {
   teacherID: String
   subject: String
   assignments: [Assignment]
+  enrollmentId: String
 }
 
 type Assignment {
