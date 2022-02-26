@@ -119,8 +119,6 @@ const ClassComp: PageComponent<Props> = ({ session }) => {
 
   if (!data || !data.class) return null;
 
-  // if (data && data.class) {
-  // console.log(data);
   const _class = data.class;
 
   return (
@@ -131,7 +129,7 @@ const ClassComp: PageComponent<Props> = ({ session }) => {
         style={{
           position: "sticky",
         }}
-        zIndex={9999999999}
+        zIndex={1}
       >
         <div
           style={{

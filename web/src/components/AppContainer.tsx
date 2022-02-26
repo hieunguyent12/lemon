@@ -72,8 +72,32 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   const role = session.role;
 
   const { data, error, loading } = useQuery<Query>(GET_CLASSES);
-  const [createClass, createClassResult] =
-    useMutation<Class, MutationCreateClassArgs>(CREATE_CLASS);
+  const [createClass, createClassResult] = useMutation<
+    Class,
+    MutationCreateClassArgs
+  >(CREATE_CLASS, {
+    // update apollo cache after we send a create class mutation
+    update(cache, { data }) {
+      const newClass: Class = (data as any).createClass;
+
+      cache.modify({
+        fields: {
+          classes(existingClasses = []) {
+            const newClassRef = cache.writeFragment({
+              data: newClass,
+              fragment: gql`
+                fragment NewClass on Class {
+                  id
+                  name
+                }
+              `,
+            });
+            return [...existingClasses, newClassRef];
+          },
+        },
+      });
+    },
+  });
 
   const onOpenModal = (type: ModalType) => {
     setModalType(type);
@@ -189,6 +213,11 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
               // viewport size > theme.breakpoints.sm – width is 300px
               // viewport size > theme.breakpoints.lg – width is 400px
               width={{ sm: 300, lg: 400 }}
+              ref={(el) => {
+                if (el) {
+                  el.style.zIndex = "0";
+                }
+              }}
             >
               {loading && <p>Loading...</p>}
               {error && <p>Error...</p>}
@@ -215,7 +244,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
         }
         header={
           <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-            <Header height={50} padding="md" fixed zIndex={9999999999}>
+            <Header height={50} padding="md" fixed>
               <div
                 style={{
                   display: "flex",
@@ -223,7 +252,6 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                   height: "100%",
                 }}
               >
-                {/* <MediaQuery largerThan="sm" styles={{ display: "none" }}> */}
                 <Burger
                   opened={opened}
                   onClick={() => setOpened((o) => !o)}
