@@ -1,7 +1,7 @@
 import { Menu } from "@mantine/core";
 import { Dispatch, SetStateAction } from "react";
 
-import { ModalType } from "./AppContainer";
+import { ModalType } from "../AppContainer";
 
 type Props = {
   control: any;

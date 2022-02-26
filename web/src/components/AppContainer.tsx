@@ -22,7 +22,7 @@ import { PlusIcon } from "@modulz/radix-icons";
 import NavbarItem from "./NavbarItem";
 import { Query, Class, MutationCreateClassArgs } from "../graphql/generated";
 import ClassList from "./class/ClassList";
-import ActionMenu from "./ActionMenu";
+import ActionMenu from "./menu/ActionMenu";
 import NewItemModalForm from "./NewItemModalForm";
 import { useAppContext } from "../context/AppContext";
 
@@ -215,7 +215,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
               width={{ sm: 300, lg: 400 }}
               ref={(el) => {
                 if (el) {
-                  el.style.zIndex = "0";
+                  el.style.zIndex = "1";
                 }
               }}
             >

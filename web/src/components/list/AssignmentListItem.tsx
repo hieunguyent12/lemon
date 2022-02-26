@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { usePopper } from "react-popper";
 
-import { DropdownMenu, DropdownMenuItem } from "../DropdownMenu";
+import { DropdownMenu, DropdownMenuItem } from "../menu/DropdownMenu";
 import ThreeDots from "../../icons/ThreeDots";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { getGradeColor } from "../../utils/getGradeColor";
