@@ -143,6 +143,24 @@ const resolvers: Resolvers<Context> = {
         },
       });
     },
+
+    async editClass(_, args, context) {
+      if (context.user.role === "student") return null;
+
+      if (!context.user.sub) return null;
+
+      const { id, name, subject } = args;
+
+      return await prisma.class.update({
+        where: {
+          id,
+        },
+        data: {
+          name,
+          subject,
+        },
+      });
+    },
   },
 };
 

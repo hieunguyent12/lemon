@@ -15,7 +15,7 @@ export type DropdownMenuItemProps = {
 
 export const DropdownMenu = forwardRef<any, DropdropMenuProps>((props, ref) => {
   const { classes, cx, theme } = useStyles(
-    { size: "md" },
+    { size: "xs" },
     { classNames: undefined, styles: undefined, name: "Menu" }
   );
 

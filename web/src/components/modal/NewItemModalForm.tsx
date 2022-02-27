@@ -10,8 +10,8 @@ import {
 import { useForm } from "@mantine/hooks";
 import { useState } from "react";
 
-import { Class } from "../graphql/generated";
-import { ModalType } from "./AppContainer";
+import { Class } from "../../graphql/generated";
+import { ModalType } from "../AppContainer";
 
 type Props = {
   modalType: ModalType | "";

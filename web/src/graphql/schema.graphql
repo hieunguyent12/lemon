@@ -7,6 +7,7 @@ type Query {
 type Mutation {
   updateUser(userId: String!, name: String, role: String): User
   createClass(name: String!, subject: String): Class
+  editClass(id: String!, name: String, subject: String): Class
 }
 
 type User {

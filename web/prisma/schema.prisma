@@ -66,7 +66,7 @@ model User {
 
 model Class {
   id                  String                @id @default(cuid())
-  name                String
+  name                String?
   image_url           String?
   subject             String?
   teacher             User                  @relation(fields: [teacherID], references: [id], onDelete: Cascade)

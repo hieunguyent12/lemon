@@ -55,6 +55,8 @@ export interface MenuItemType {
 }
 
 export const MenuItem = forwardRef<any, any>((props, ref) => {
+  const { icon, children, ...others } = props;
+
   const { classes, cx } = useStyles(
     { radius: "sm" },
     { classNames: undefined, styles: undefined, name: "Menu" }
@@ -69,11 +71,11 @@ export const MenuItem = forwardRef<any, any>((props, ref) => {
       // onMouseEnter={() => !disabled && onHover()}
       ref={ref}
       // disabled={disabled}
-      // {...others}
+      {...others}
     >
       <div className={classes.itemInner}>
-        {props.icon && <div className={classes.itemIcon}>{props.icon}</div>}
-        <div className={classes.itemLabel}>{props.children}</div>
+        {icon && <div className={classes.itemIcon}>{icon}</div>}
+        <div className={classes.itemLabel}>{children}</div>
 
         {/* 
 

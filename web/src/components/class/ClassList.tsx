@@ -1,17 +1,29 @@
 import { useRouter } from "next/router";
-import { DotsHorizontalIcon } from "@modulz/radix-icons";
+import {
+  DotsHorizontalIcon,
+  Pencil2Icon,
+  TrashIcon,
+} from "@modulz/radix-icons";
+import { Modal } from "@mantine/core";
 
 import { Class, Maybe, Query } from "../../graphql/generated";
-import NavbarItem from "../NavbarItem";
+import ClassListItem from "./ClassListItem";
 import { useEffect, useState } from "react";
+import { DropdownMenuItem } from "../menu/DropdownMenu";
 
 type Props = {
   classes: Query["classes"];
   role: "student" | "teacher";
   hideBurgerMenu: () => void;
+  onOpenEditModal: (_class: Class) => void;
 };
 
-const ClassList: React.FC<Props> = ({ classes, role, hideBurgerMenu }) => {
+const ClassList: React.FC<Props> = ({
+  classes,
+  role,
+  hideBurgerMenu,
+  onOpenEditModal,
+}) => {
   const router = useRouter();
 
   const isTeacher = role === "teacher";
@@ -23,21 +35,41 @@ const ClassList: React.FC<Props> = ({ classes, role, hideBurgerMenu }) => {
     hideBurgerMenu();
   };
 
+  const onDeleteClass = () => {
+    console.log("delete");
+  };
+
   if (!classes) return null;
 
   return (
     <div>
       {classes.map((classItem) =>
         classItem ? (
-          <NavbarItem
+          <ClassListItem
             key={classItem.id}
             onClick={() => onItemClick(classItem)}
             isSelected={router.query.id === classItem.id}
             rightIcon={<DotsHorizontalIcon />}
+            menuContent={
+              <>
+                <DropdownMenuItem
+                  onClick={() => onOpenEditModal(classItem)}
+                  icon={<Pencil2Icon />}
+                >
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onDeleteClass()}
+                  icon={<TrashIcon />}
+                >
+                  Delete
+                </DropdownMenuItem>
+              </>
+            }
             hasMenu
           >
             {classItem.name}
-          </NavbarItem>
+          </ClassListItem>
         ) : null
       )}
     </div>

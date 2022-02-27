@@ -13,17 +13,25 @@ import {
   SegmentedControl,
   Group,
 } from "@mantine/core";
+import { useNotifications } from "@mantine/notifications";
 import { useForm } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import { Session } from "next-auth";
 import { PlusIcon } from "@modulz/radix-icons";
 
-import NavbarItem from "./NavbarItem";
-import { Query, Class, MutationCreateClassArgs } from "../graphql/generated";
+import NavbarItem from "./class/ClassListItem";
+import {
+  Query,
+  Class,
+  MutationCreateClassArgs,
+  Maybe,
+  MutationEditClassArgs,
+} from "../graphql/generated";
 import ClassList from "./class/ClassList";
 import ActionMenu from "./menu/ActionMenu";
-import NewItemModalForm from "./NewItemModalForm";
+import NewItemModalForm from "./modal/NewItemModalForm";
+import EditItemForm from "./modal/EditItemForm";
 import { useAppContext } from "../context/AppContext";
 
 type Props = {
@@ -38,6 +46,7 @@ const GET_CLASSES = gql`
     classes {
       id
       name
+      subject
     }
   }
 `;
@@ -47,6 +56,16 @@ const CREATE_CLASS = gql`
     createClass(name: $name, subject: $subject) {
       id
       name
+    }
+  }
+`;
+
+const EDIT_CLASS = gql`
+  mutation editClass($id: String!, $name: String!, $subject: String) {
+    editClass(id: $id, name: $name, subject: $subject) {
+      id
+      name
+      subject
     }
   }
 `;
@@ -62,9 +81,16 @@ const useMenuStyles = createStyles((theme) => ({
 
 const AppContainer: React.FC<Props> = ({ children, session }) => {
   const [menuOpened, setMenuOpened] = useState(false);
-  const [modalOpened, setModalOpened] = useState(false);
   const [opened, setOpened] = useState(false);
+
+  // this state holds the data for the class that we are currently editing
+  const [editingClass, setEditingClass] = useState<Maybe<Class>>(null);
+
   const [modalType, setModalType] = useState<ModalType | "">("");
+  const [modalOpened, setModalOpened] = useState(false);
+  const [editModalOpened, setEditModalOpened] = useState(false);
+
+  const notifications = useNotifications();
   const theme = useMantineTheme();
   const { classes: menuClasses } = useMenuStyles();
   const { state: appContextState } = useAppContext();
@@ -89,6 +115,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                 fragment NewClass on Class {
                   id
                   name
+                  subject
                 }
               `,
             });
@@ -99,9 +126,42 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
     },
   });
 
+  const [editClass, editClassResult] = useMutation<
+    Class,
+    MutationEditClassArgs
+  >(EDIT_CLASS, {
+    update(cache, { data }) {
+      const updatedClass: Class = (data as any).editClass;
+
+      cache.updateFragment(
+        {
+          id: cache.identify(updatedClass),
+          fragment: gql`
+            fragment UpdatedClass on Class {
+              id
+              name
+              subject
+            }
+          `,
+        },
+        (data) => ({
+          ...data,
+          name: updatedClass.name,
+          subject: updatedClass.subject,
+        })
+      );
+    },
+  });
+
   const onOpenModal = (type: ModalType) => {
     setModalType(type);
     setModalOpened(true);
+  };
+
+  const onOpenEditClassModal = (_class: Maybe<Class>) => {
+    setEditingClass(_class);
+    setEditModalOpened(true);
+    setModalType("class");
   };
 
   const onCreateClass = (name: string, subject: string) => {
@@ -111,6 +171,34 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
         subject,
       },
     }).catch(() => {});
+  };
+
+  const onEditClass = (newName: string, newSubject: string) => {
+    if (!editingClass || !newName) return;
+
+    // if nothing has changed, do not send a request to edit
+    if (newName === editingClass.name && newSubject === editingClass.subject) {
+      return;
+    }
+
+    editClass({
+      variables: {
+        id: editingClass.id,
+        name: newName,
+        subject: newSubject,
+      },
+    })
+      .then((res) => {
+        if (res.data) {
+          setEditingClass(null);
+          notifications.showNotification({
+            title: "Success! 🎉",
+            message: `Updated ${newName}`,
+            color: "green",
+          });
+        }
+      })
+      .catch(() => {});
   };
 
   const onCreateAssigment = (name: string) => {
@@ -233,6 +321,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                   classes={data?.classes}
                   role={session.role}
                   hideBurgerMenu={hideBurgerMenu}
+                  onOpenEditModal={onOpenEditClassModal}
                 />
               </Navbar.Section>
               <Divider />
@@ -302,6 +391,20 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
           createClassResult={createClassResult}
         />
       </Modal>
+
+      {editingClass && (
+        <Modal
+          opened={editModalOpened}
+          onClose={() => setEditModalOpened(false)}
+          title="Edit class"
+        >
+          <EditItemForm
+            editingClass={editingClass}
+            editClass={onEditClass}
+            modalType={modalType}
+          />
+        </Modal>
+      )}
     </>
   );
 };
