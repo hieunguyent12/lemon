@@ -50,18 +50,31 @@ const ClassList: React.FC<Props> = ({
             rightIcon={<DotsHorizontalIcon />}
             menuContent={
               <>
-                <DropdownMenuItem
-                  onClick={() => onOpenEditModal(classItem)}
-                  icon={<Pencil2Icon />}
-                >
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => deleteClass(classItem.id)}
-                  icon={<TrashIcon />}
-                >
-                  Delete
-                </DropdownMenuItem>
+                {isTeacher ? (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => onOpenEditModal(classItem)}
+                      icon={<Pencil2Icon />}
+                    >
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => deleteClass(classItem.id)}
+                      icon={<TrashIcon />}
+                    >
+                      Delete
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => deleteClass(classItem.id)}
+                      icon={<TrashIcon />}
+                    >
+                      Unenroll
+                    </DropdownMenuItem>
+                  </>
+                )}
               </>
             }
             hasMenu
