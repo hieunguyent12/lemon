@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { useQuery, gql, useMutation } from "@apollo/client";
 import { Session } from "next-auth";
 import { PlusIcon } from "@modulz/radix-icons";
+import { useRouter } from "next/router";
 
 import NavbarItem from "./class/ClassListItem";
 import {
@@ -102,6 +103,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   const theme = useMantineTheme();
   const { classes: menuClasses } = useMenuStyles();
   const { state: appContextState } = useAppContext();
+  const router = useRouter();
 
   const role = session.role;
 
@@ -240,7 +242,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
         id,
       },
     })
-      .then((res) => {
+      .then((res: any) => {
         if (res.data) {
           setEditingClass(null);
           notifications.showNotification({
@@ -248,6 +250,11 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
             message: null,
             color: "green",
           });
+
+          // if we are currently in the class that just got deleted, redirect to the home page
+          if (window.location.pathname === `/class/${res.data.deleteClass}`) {
+            router.replace("/home");
+          }
         }
       })
       .catch(() => {});

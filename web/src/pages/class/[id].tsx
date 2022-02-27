@@ -49,6 +49,9 @@ const ClassComp: PageComponent<Props> = ({ session }) => {
   const role = session.role;
 
   useEffect(() => {
+    if (!data?.class && !loading) {
+      router.replace("/home");
+    }
     if (data && data.class && data.class.id && data.class.name) {
       dispatch({
         type: "SET_SELECTED_CLASS",
@@ -58,7 +61,7 @@ const ClassComp: PageComponent<Props> = ({ session }) => {
         },
       });
     }
-  }, [data?.class?.id, data?.class?.name]);
+  }, [data?.class?.id, data?.class?.name, loading]);
 
   const renderHeaderContent = (_class: Class) => {
     if (role === "student") {
