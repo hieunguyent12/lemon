@@ -27,6 +27,7 @@ import {
   MutationCreateClassArgs,
   Maybe,
   MutationEditClassArgs,
+  MutationDeleteClassArgs,
 } from "../graphql/generated";
 import ClassList from "./class/ClassList";
 import ActionMenu from "./menu/ActionMenu";
@@ -56,6 +57,7 @@ const CREATE_CLASS = gql`
     createClass(name: $name, subject: $subject) {
       id
       name
+      subject
     }
   }
 `;
@@ -67,6 +69,12 @@ const EDIT_CLASS = gql`
       name
       subject
     }
+  }
+`;
+
+const DELETE_CLASS = gql`
+  mutation deleteClass($id: String!) {
+    deleteClass(id: $id)
   }
 `;
 
@@ -153,6 +161,25 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
     },
   });
 
+  const [deleteClass, deleteClassResult] = useMutation<
+    Class,
+    MutationDeleteClassArgs
+  >(DELETE_CLASS, {
+    update(cache, { data }) {
+      const deletedClassId: string = (data as any).deleteClass;
+
+      cache.modify({
+        fields: {
+          classes(existingClasses = [], { readField }) {
+            return existingClasses.filter(
+              (classRef: any) => readField("id", classRef) !== deletedClassId
+            );
+          },
+        },
+      });
+    },
+  });
+
   const onOpenModal = (type: ModalType) => {
     setModalType(type);
     setModalOpened(true);
@@ -165,6 +192,8 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   };
 
   const onCreateClass = (name: string, subject: string) => {
+    if (role === "student") return;
+
     createClass({
       variables: {
         name,
@@ -174,7 +203,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   };
 
   const onEditClass = (newName: string, newSubject: string) => {
-    if (!editingClass || !newName) return;
+    if (!editingClass || !newName || role === "student") return;
 
     // if nothing has changed, do not send a request to edit
     if (newName === editingClass.name && newSubject === editingClass.subject) {
@@ -194,6 +223,29 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
           notifications.showNotification({
             title: "Success! 🎉",
             message: `Updated ${newName}`,
+            color: "green",
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
+  const onDeleteClass = (id: string) => {
+    if (!id || role === "student") {
+      return;
+    }
+
+    deleteClass({
+      variables: {
+        id,
+      },
+    })
+      .then((res) => {
+        if (res.data) {
+          setEditingClass(null);
+          notifications.showNotification({
+            title: "Successfully deleted class!",
+            message: null,
             color: "green",
           });
         }
@@ -322,6 +374,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                   role={session.role}
                   hideBurgerMenu={hideBurgerMenu}
                   onOpenEditModal={onOpenEditClassModal}
+                  deleteClass={onDeleteClass}
                 />
               </Navbar.Section>
               <Divider />

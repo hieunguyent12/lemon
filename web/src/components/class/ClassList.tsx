@@ -16,6 +16,7 @@ type Props = {
   role: "student" | "teacher";
   hideBurgerMenu: () => void;
   onOpenEditModal: (_class: Class) => void;
+  deleteClass: (id: string) => void;
 };
 
 const ClassList: React.FC<Props> = ({
@@ -23,6 +24,7 @@ const ClassList: React.FC<Props> = ({
   role,
   hideBurgerMenu,
   onOpenEditModal,
+  deleteClass,
 }) => {
   const router = useRouter();
 
@@ -33,10 +35,6 @@ const ClassList: React.FC<Props> = ({
 
     router.push(`/class/${isTeacher ? classItem.id : classItem.enrollmentId}`);
     hideBurgerMenu();
-  };
-
-  const onDeleteClass = () => {
-    console.log("delete");
   };
 
   if (!classes) return null;
@@ -59,7 +57,7 @@ const ClassList: React.FC<Props> = ({
                   Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => onDeleteClass()}
+                  onClick={() => deleteClass(classItem.id)}
                   icon={<TrashIcon />}
                 >
                   Delete

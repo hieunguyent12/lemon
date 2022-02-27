@@ -154,12 +154,30 @@ const resolvers: Resolvers<Context> = {
       return await prisma.class.update({
         where: {
           id,
+          teacherID: context.user.sub,
         },
         data: {
           name,
           subject,
         },
       });
+    },
+
+    async deleteClass(_, args, context) {
+      if (context.user.role === "student") return null;
+
+      if (!context.user.sub) return null;
+
+      const { id } = args;
+
+      await prisma.class.deleteMany({
+        where: {
+          id,
+          teacherID: context.user.sub,
+        },
+      });
+
+      return id;
     },
   },
 };
