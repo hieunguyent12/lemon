@@ -235,24 +235,17 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
       cache.modify({
         fields: {
           classes(existingClasses = []) {
-            cache.modify({
-              fields: {
-                classes(existingClasses = []) {
-                  const newClassRef = cache.writeFragment({
-                    data: newClass,
-                    fragment: gql`
-                      fragment NewClass on Class {
-                        id
-                        name
-                        subject
-                      }
-                    `,
-                  });
-                  return [...existingClasses, newClassRef];
-                },
-              },
+            const newClassRef = cache.writeFragment({
+              data: newClass,
+              fragment: gql`
+                fragment NewClass on Class {
+                  id
+                  name
+                  subject
+                }
+              `,
             });
-            return [...existingClasses];
+            return [...existingClasses, newClassRef];
           },
         },
       });
@@ -344,7 +337,17 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
       variables: {
         code,
       },
-    }).catch(() => {});
+    })
+      .then((res) => {
+        if (res.data) {
+          notifications.showNotification({
+            title: "Successfully joined class!",
+            message: null,
+            color: "green",
+          });
+        }
+      })
+      .catch(() => {});
   };
 
   const onCreateAssigment = (name: string) => {
