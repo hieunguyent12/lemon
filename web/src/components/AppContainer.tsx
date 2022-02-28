@@ -29,6 +29,7 @@ import {
   Maybe,
   MutationEditClassArgs,
   MutationDeleteClassArgs,
+  MutationJoinClassArgs,
 } from "../graphql/generated";
 import ClassList from "./class/ClassList";
 import ActionMenu from "./menu/ActionMenu";
@@ -41,7 +42,7 @@ type Props = {
   session: Session;
 };
 
-export type ModalType = "class" | "assignment";
+export type ModalType = "class" | "assignment" | "join";
 
 const GET_CLASSES = gql`
   query Classes {
@@ -49,6 +50,15 @@ const GET_CLASSES = gql`
       id
       name
       subject
+      classCode
+      enrollmentId
+      assignments {
+        id
+        assignmentID
+        name
+        teacherID
+        classID
+      }
     }
   }
 `;
@@ -59,6 +69,7 @@ const CREATE_CLASS = gql`
       id
       name
       subject
+      classCode
     }
   }
 `;
@@ -79,13 +90,43 @@ const DELETE_CLASS = gql`
   }
 `;
 
+const JOIN_CLASS = gql`
+  mutation joinClass($code: String!) {
+    joinClass(code: $code) {
+      id
+      name
+      subject
+      assignments {
+        id
+        assignmentID
+        name
+        teacherID
+        classID
+      }
+    }
+  }
+`;
+
+function getModalTitle(type: ModalType | "") {
+  if (type === "class") {
+    return "Create a class";
+  }
+
+  if (type === "assignment") {
+    return "Create an assignment";
+  }
+
+  if (type === "join") {
+    return "Join a class";
+  }
+
+  return null;
+}
+
 const useMenuStyles = createStyles((theme) => ({
   root: {
     flex: 1,
   },
-  // track: {
-  //   width: "100%",
-  // },
 }));
 
 const AppContainer: React.FC<Props> = ({ children, session }) => {
@@ -107,6 +148,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
 
   const role = session.role;
 
+  // TODO: Move these into their own files
   const { data, error, loading } = useQuery<Query>(GET_CLASSES);
   const [createClass, createClassResult] = useMutation<
     Class,
@@ -126,6 +168,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                   id
                   name
                   subject
+                  classCode
                 }
               `,
             });
@@ -176,6 +219,40 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
             return existingClasses.filter(
               (classRef: any) => readField("id", classRef) !== deletedClassId
             );
+          },
+        },
+      });
+    },
+  });
+
+  const [joinClass, joinClassResult] = useMutation<
+    Class,
+    MutationJoinClassArgs
+  >(JOIN_CLASS, {
+    update(cache, { data }) {
+      const newClass: Class = (data as any).joinClass;
+
+      cache.modify({
+        fields: {
+          classes(existingClasses = []) {
+            cache.modify({
+              fields: {
+                classes(existingClasses = []) {
+                  const newClassRef = cache.writeFragment({
+                    data: newClass,
+                    fragment: gql`
+                      fragment NewClass on Class {
+                        id
+                        name
+                        subject
+                      }
+                    `,
+                  });
+                  return [...existingClasses, newClassRef];
+                },
+              },
+            });
+            return [...existingClasses];
           },
         },
       });
@@ -260,6 +337,16 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
       .catch(() => {});
   };
 
+  const onJoinClass = (code: string) => {
+    if (!code || code.length !== 7) return;
+
+    joinClass({
+      variables: {
+        code,
+      },
+    }).catch(() => {});
+  };
+
   const onCreateAssigment = (name: string) => {
     // createClass({
     //   variables: {
@@ -272,43 +359,47 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   const hideBurgerMenu = () => setOpened(false);
 
   const renderActions = () => {
+    const tabs = (
+      <SegmentedControl
+        size="sm"
+        data={[
+          { label: "Classes", value: "class" },
+          { label: "Assignments", value: "assignment" },
+        ]}
+        style={{
+          flexGrow: 1,
+        }}
+      />
+    );
     if (role === "student") {
       return (
-        <ActionMenu
-          control={
-            <Button
-              fullWidth
-              leftIcon={<PlusIcon />}
-              variant="gradient"
-              gradient={{ from: "grape", to: "pink", deg: 35 }}
-              onClick={() => setMenuOpened(!menuOpened)}
-            >
-              New
-            </Button>
-          }
-          menuClasses={menuClasses}
-          menuOpened={menuOpened}
-          setMenuOpened={setMenuOpened}
-          role={session.role}
-          onOpenModal={onOpenModal}
-        />
+        <Group>
+          {tabs}
+          <ActionMenu
+            control={
+              <Button
+                fullWidth
+                leftIcon={<PlusIcon />}
+                variant="gradient"
+                gradient={{ from: "grape", to: "pink", deg: 35 }}
+                onClick={() => setMenuOpened(!menuOpened)}
+              >
+                New
+              </Button>
+            }
+            menuClasses={menuClasses}
+            menuOpened={menuOpened}
+            setMenuOpened={setMenuOpened}
+            role={session.role}
+            onOpenModal={onOpenModal}
+          />
+        </Group>
       );
     }
     if (role === "teacher") {
       return (
         <Group>
-          <SegmentedControl
-            size="sm"
-            data={[
-              { label: "Classes", value: "class" },
-              { label: "Assignments", value: "assignment" },
-            ]}
-            // fullWidth
-            // classNames={menuClasses}
-            style={{
-              flexGrow: 1,
-            }}
-          />
+          {tabs}
           <ActionMenu
             control={
               <Button
@@ -442,17 +533,18 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
       <Modal
         opened={modalOpened}
         onClose={() => setModalOpened(false)}
-        title="Create a class"
+        title={getModalTitle(modalType)}
       >
         <NewItemModalForm
           modalType={modalType}
           createClass={onCreateClass}
+          joinClass={onJoinClass}
           createAssignment={onCreateAssigment}
           createClassResult={createClassResult}
         />
       </Modal>
 
-      {editingClass && (
+      {editingClass && role === "teacher" && (
         <Modal
           opened={editModalOpened}
           onClose={() => setEditModalOpened(false)}

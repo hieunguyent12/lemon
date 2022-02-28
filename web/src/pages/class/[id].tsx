@@ -27,6 +27,7 @@ const GET_CLASS = gql`
     class(id: $id) {
       id
       name
+      subject
       assignments {
         id
         assignmentID

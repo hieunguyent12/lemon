@@ -26,6 +26,7 @@ export type Assignment = {
 export type Class = {
   __typename?: 'Class';
   assignments?: Maybe<Array<Maybe<Assignment>>>;
+  classCode?: Maybe<Scalars['String']>;
   enrollmentId?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   image_url?: Maybe<Scalars['String']>;
@@ -47,6 +48,7 @@ export type Mutation = {
   createClass?: Maybe<Class>;
   deleteClass?: Maybe<Scalars['String']>;
   editClass?: Maybe<Class>;
+  joinClass?: Maybe<Class>;
   updateUser?: Maybe<User>;
 };
 
@@ -66,6 +68,11 @@ export type MutationEditClassArgs = {
   id: Scalars['String'];
   name?: InputMaybe<Scalars['String']>;
   subject?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationJoinClassArgs = {
+  code: Scalars['String'];
 };
 
 
@@ -204,6 +211,7 @@ export type AssignmentResolvers<ContextType = any, ParentType extends ResolversP
 
 export type ClassResolvers<ContextType = any, ParentType extends ResolversParentTypes['Class'] = ResolversParentTypes['Class']> = {
   assignments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Assignment']>>>, ParentType, ContextType>;
+  classCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   enrollmentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   image_url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -225,6 +233,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createClass?: Resolver<Maybe<ResolversTypes['Class']>, ParentType, ContextType, RequireFields<MutationCreateClassArgs, 'name'>>;
   deleteClass?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationDeleteClassArgs, 'id'>>;
   editClass?: Resolver<Maybe<ResolversTypes['Class']>, ParentType, ContextType, RequireFields<MutationEditClassArgs, 'id'>>;
+  joinClass?: Resolver<Maybe<ResolversTypes['Class']>, ParentType, ContextType, RequireFields<MutationJoinClassArgs, 'code'>>;
   updateUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'userId'>>;
 };
 

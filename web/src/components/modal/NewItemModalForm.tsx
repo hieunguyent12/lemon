@@ -17,12 +17,14 @@ type Props = {
   modalType: ModalType | "";
   createClass: (name: string, subject: string) => void;
   createAssignment: (name: string) => void;
+  joinClass: (code: string) => void;
   createClassResult: MutationResult<Class>;
 };
 
 const NewItemModalForm: React.FC<Props> = ({
   modalType,
   createClass,
+  joinClass,
   createAssignment,
   createClassResult,
 }) => {
@@ -37,6 +39,12 @@ const NewItemModalForm: React.FC<Props> = ({
   const assignmentForm = useForm({
     initialValues: {
       assignmentName: "",
+    },
+  });
+
+  const joinForm = useForm({
+    initialValues: {
+      code: "",
     },
   });
 
@@ -91,6 +99,32 @@ const NewItemModalForm: React.FC<Props> = ({
               type="submit"
             >
               Create
+            </Button>
+          </Group>
+        </form>
+      );
+    }
+
+    if (modalType === "join") {
+      return (
+        <form
+          onSubmit={joinForm.onSubmit((values) => {
+            joinClass(values.code);
+          })}
+        >
+          {/* <LoadingOverlay visible={createClassResult.loading} /> */}
+          <TextInput
+            required
+            label="Class code"
+            {...joinForm.getInputProps("code")}
+          />
+          <Group position="right" mt="xl">
+            <Button
+              variant="gradient"
+              gradient={{ from: "grape", to: "pink", deg: 35 }}
+              type="submit"
+            >
+              Join
             </Button>
           </Group>
         </form>

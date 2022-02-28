@@ -1,6 +1,9 @@
+import { customAlphabet } from "nanoid";
 import { JWT } from "next-auth/jwt";
 import { prisma } from "../prisma";
 import { Resolvers } from "./generated";
+
+const nanoid = customAlphabet("1234567890abcdef", 7);
 
 function parseClassResponse(_class: any) {
   const newClass = {
@@ -140,6 +143,7 @@ const resolvers: Resolvers<Context> = {
           name,
           subject,
           teacherID: context.user.sub,
+          classCode: nanoid(),
         },
       });
     },
@@ -151,10 +155,11 @@ const resolvers: Resolvers<Context> = {
 
       const { id, name, subject } = args;
 
+      // TODO: Fix authorization, can use updateMany
       return await prisma.class.update({
         where: {
           id,
-          teacherID: context.user.sub,
+          // teacherID: context.user.sub,
         },
         data: {
           name,
@@ -178,6 +183,35 @@ const resolvers: Resolvers<Context> = {
       });
 
       return id;
+    },
+
+    async joinClass(_, args, context) {
+      if (!context.user.sub) return null;
+
+      const { code } = args;
+
+      // create an enrollment
+      // https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#connect-an-existing-record
+
+      const enrollment = await prisma.enrollment.create({
+        data: {
+          student: {
+            connect: {
+              id: context.user.sub,
+            },
+          },
+          class: {
+            connect: {
+              classCode: code,
+            },
+          },
+        },
+        include: {
+          class: true,
+        },
+      });
+
+      return enrollment.class;
     },
   },
 };

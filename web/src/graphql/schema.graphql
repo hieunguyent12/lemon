@@ -9,6 +9,7 @@ type Mutation {
   createClass(name: String!, subject: String): Class
   editClass(id: String!, name: String, subject: String): Class
   deleteClass(id: String!): String
+  joinClass(code: String!): Class
 }
 
 type User {
@@ -31,6 +32,7 @@ type Class {
   subject: String
   assignments: [Assignment]
   enrollmentId: String
+  classCode: String
 }
 
 type Assignment {

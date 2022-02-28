@@ -69,6 +69,7 @@ model Class {
   name                String?
   image_url           String?
   subject             String?
+  classCode           String?               @unique
   teacher             User                  @relation(fields: [teacherID], references: [id], onDelete: Cascade)
   teacherID           String
   students            Enrollment[]

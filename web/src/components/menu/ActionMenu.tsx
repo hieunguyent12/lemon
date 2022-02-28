@@ -32,7 +32,7 @@ const ActionMenu: React.FC<Props> = ({
     >
       <Menu.Label>Menu</Menu.Label>
       {role === "student" ? (
-        <Menu.Item>Join class</Menu.Item>
+        <Menu.Item onClick={() => onOpenModal("join")}>Join class</Menu.Item>
       ) : (
         [
           <Menu.Item key="1" onClick={() => onOpenModal("class")}>
