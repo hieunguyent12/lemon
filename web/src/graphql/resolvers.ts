@@ -5,6 +5,7 @@ import { Resolvers } from "./generated";
 
 const nanoid = customAlphabet("1234567890abcdef", 7);
 
+// flatten the assignments property returned by prisma
 function parseClassResponse(_class: any) {
   const newClass = {
     ..._class,
@@ -45,20 +46,39 @@ const resolvers: Resolvers<Context> = {
             studentID: user.sub,
           },
           include: {
-            class: true,
+            class: {
+              include: {
+                classes_assignments: {
+                  include: {
+                    assignment: true,
+                  },
+                },
+              },
+            },
           },
         });
+
         return enrollments.map((enrollment) => ({
           enrollmentId: enrollment.id,
-          ...enrollment.class,
+          ...parseClassResponse(enrollment.class),
         }));
       } else {
-        // just check for classes
-        return await prisma.class.findMany({
+        let allClasses = await prisma.class.findMany({
           where: {
             teacherID: user.sub,
           },
+          include: {
+            classes_assignments: {
+              include: {
+                assignment: true,
+              },
+            },
+          },
         });
+
+        allClasses = allClasses.map((_class) => parseClassResponse(_class));
+
+        return allClasses;
       }
     },
     async class(_, args, context) {
@@ -84,7 +104,10 @@ const resolvers: Resolvers<Context> = {
         });
 
         if (enrollment && enrollment.class) {
-          return parseClassResponse(enrollment.class);
+          return {
+            enrollmentId: enrollment.id,
+            ...parseClassResponse(enrollment.class),
+          };
         } else {
           return null;
         }
@@ -138,14 +161,23 @@ const resolvers: Resolvers<Context> = {
 
       const { name, subject = null } = args;
 
-      return await prisma.class.create({
+      const newClass = await prisma.class.create({
         data: {
           name,
           subject,
           teacherID: context.user.sub,
           classCode: nanoid(),
         },
+        include: {
+          classes_assignments: {
+            include: {
+              assignment: true,
+            },
+          },
+        },
       });
+
+      return parseClassResponse(newClass);
     },
 
     async editClass(_, args, context) {
@@ -155,7 +187,7 @@ const resolvers: Resolvers<Context> = {
 
       const { id, name, subject } = args;
 
-      // TODO: Fix authorization, can use updateMany
+      // TODO: Fix authorization, use updateMany and also return the udpated class?
       return await prisma.class.update({
         where: {
           id,
@@ -164,6 +196,14 @@ const resolvers: Resolvers<Context> = {
         data: {
           name,
           subject,
+        },
+
+        include: {
+          classes_assignments: {
+            include: {
+              assignment: true,
+            },
+          },
         },
       });
     },
@@ -189,9 +229,6 @@ const resolvers: Resolvers<Context> = {
       if (!context.user.sub) return null;
 
       const { code } = args;
-
-      // create an enrollment
-      // https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#connect-an-existing-record
 
       const enrollment = await prisma.enrollment.create({
         data: {

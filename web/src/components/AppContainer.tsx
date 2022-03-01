@@ -2,7 +2,6 @@ import {
   AppShell,
   Navbar,
   Header,
-  Text,
   MediaQuery,
   Burger,
   useMantineTheme,
@@ -14,28 +13,23 @@ import {
   Group,
 } from "@mantine/core";
 import { useNotifications } from "@mantine/notifications";
-import { useForm } from "@mantine/hooks";
-import { useEffect, useState } from "react";
-import { useQuery, gql, useMutation } from "@apollo/client";
+import { useState } from "react";
 import { Session } from "next-auth";
 import { PlusIcon } from "@modulz/radix-icons";
 import { useRouter } from "next/router";
 
 import NavbarItem from "./class/ClassListItem";
-import {
-  Query,
-  Class,
-  MutationCreateClassArgs,
-  Maybe,
-  MutationEditClassArgs,
-  MutationDeleteClassArgs,
-  MutationJoinClassArgs,
-} from "../graphql/generated";
+import { Class, Maybe } from "../graphql/generated";
 import ClassList from "./class/ClassList";
 import ActionMenu from "./menu/ActionMenu";
 import NewItemModalForm from "./modal/NewItemModalForm";
 import EditItemForm from "./modal/EditItemForm";
 import { useAppContext } from "../context/AppContext";
+import useGetClasses from "../hooks/class/useGetClasses";
+import useCreateClass from "../hooks/class/useCreateClass";
+import useEditClass from "../hooks/class/useEditClass";
+import useDeleteClass from "../hooks/class/useDeleteClass";
+import useJoinClass from "../hooks/class/useJoinClass";
 
 type Props = {
   children: React.ReactNode;
@@ -43,69 +37,6 @@ type Props = {
 };
 
 export type ModalType = "class" | "assignment" | "join";
-
-const GET_CLASSES = gql`
-  query Classes {
-    classes {
-      id
-      name
-      subject
-      classCode
-      enrollmentId
-      assignments {
-        id
-        assignmentID
-        name
-        teacherID
-        classID
-      }
-    }
-  }
-`;
-
-const CREATE_CLASS = gql`
-  mutation createClass($name: String!, $subject: String) {
-    createClass(name: $name, subject: $subject) {
-      id
-      name
-      subject
-      classCode
-    }
-  }
-`;
-
-const EDIT_CLASS = gql`
-  mutation editClass($id: String!, $name: String!, $subject: String) {
-    editClass(id: $id, name: $name, subject: $subject) {
-      id
-      name
-      subject
-    }
-  }
-`;
-
-const DELETE_CLASS = gql`
-  mutation deleteClass($id: String!) {
-    deleteClass(id: $id)
-  }
-`;
-
-const JOIN_CLASS = gql`
-  mutation joinClass($code: String!) {
-    joinClass(code: $code) {
-      id
-      name
-      subject
-      assignments {
-        id
-        assignmentID
-        name
-        teacherID
-        classID
-      }
-    }
-  }
-`;
 
 function getModalTitle(type: ModalType | "") {
   if (type === "class") {
@@ -130,15 +61,14 @@ const useMenuStyles = createStyles((theme) => ({
 }));
 
 const AppContainer: React.FC<Props> = ({ children, session }) => {
-  const [menuOpened, setMenuOpened] = useState(false);
-  const [opened, setOpened] = useState(false);
-
   // this state holds the data for the class that we are currently editing
   const [editingClass, setEditingClass] = useState<Maybe<Class>>(null);
 
   const [modalType, setModalType] = useState<ModalType | "">("");
   const [modalOpened, setModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
+  const [menuOpened, setMenuOpened] = useState(false);
+  const [opened, setOpened] = useState(false);
 
   const notifications = useNotifications();
   const theme = useMantineTheme();
@@ -146,111 +76,14 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
   const { state: appContextState } = useAppContext();
   const router = useRouter();
 
+  // Apollo graphql hooks
+  const { classes, error, loading } = useGetClasses();
+  const { createClass, createClassResult } = useCreateClass();
+  const { editClass, editClassResult } = useEditClass();
+  const { deleteClass, deleteClassResult } = useDeleteClass();
+  const { joinClass, joinClassResult } = useJoinClass();
+
   const role = session.role;
-
-  // TODO: Move these into their own files
-  const { data, error, loading } = useQuery<Query>(GET_CLASSES);
-  const [createClass, createClassResult] = useMutation<
-    Class,
-    MutationCreateClassArgs
-  >(CREATE_CLASS, {
-    // update apollo cache after we send a create class mutation
-    update(cache, { data }) {
-      const newClass: Class = (data as any).createClass;
-
-      cache.modify({
-        fields: {
-          classes(existingClasses = []) {
-            const newClassRef = cache.writeFragment({
-              data: newClass,
-              fragment: gql`
-                fragment NewClass on Class {
-                  id
-                  name
-                  subject
-                  classCode
-                }
-              `,
-            });
-            return [...existingClasses, newClassRef];
-          },
-        },
-      });
-    },
-  });
-
-  const [editClass, editClassResult] = useMutation<
-    Class,
-    MutationEditClassArgs
-  >(EDIT_CLASS, {
-    update(cache, { data }) {
-      const updatedClass: Class = (data as any).editClass;
-
-      cache.updateFragment(
-        {
-          id: cache.identify(updatedClass),
-          fragment: gql`
-            fragment UpdatedClass on Class {
-              id
-              name
-              subject
-            }
-          `,
-        },
-        (data) => ({
-          ...data,
-          name: updatedClass.name,
-          subject: updatedClass.subject,
-        })
-      );
-    },
-  });
-
-  const [deleteClass, deleteClassResult] = useMutation<
-    Class,
-    MutationDeleteClassArgs
-  >(DELETE_CLASS, {
-    update(cache, { data }) {
-      const deletedClassId: string = (data as any).deleteClass;
-
-      cache.modify({
-        fields: {
-          classes(existingClasses = [], { readField }) {
-            return existingClasses.filter(
-              (classRef: any) => readField("id", classRef) !== deletedClassId
-            );
-          },
-        },
-      });
-    },
-  });
-
-  const [joinClass, joinClassResult] = useMutation<
-    Class,
-    MutationJoinClassArgs
-  >(JOIN_CLASS, {
-    update(cache, { data }) {
-      const newClass: Class = (data as any).joinClass;
-
-      cache.modify({
-        fields: {
-          classes(existingClasses = []) {
-            const newClassRef = cache.writeFragment({
-              data: newClass,
-              fragment: gql`
-                fragment NewClass on Class {
-                  id
-                  name
-                  subject
-                }
-              `,
-            });
-            return [...existingClasses, newClassRef];
-          },
-        },
-      });
-    },
-  });
 
   const onOpenModal = (type: ModalType) => {
     setModalType(type);
@@ -302,7 +135,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
       .catch(() => {});
   };
 
-  const onDeleteClass = (id: string) => {
+  const onDeleteClass = (id: string | undefined) => {
     if (!id || role === "student") {
       return;
     }
@@ -471,7 +304,7 @@ const AppContainer: React.FC<Props> = ({ children, session }) => {
                 }}
               >
                 <ClassList
-                  classes={data?.classes}
+                  classes={classes}
                   role={session.role}
                   hideBurgerMenu={hideBurgerMenu}
                   onOpenEditModal={onOpenEditClassModal}

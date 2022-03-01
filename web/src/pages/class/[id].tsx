@@ -9,35 +9,17 @@ import {
   Box,
 } from "@mantine/core";
 import { GearIcon } from "@modulz/radix-icons";
+import { Session } from "next-auth";
+import { useEffect } from "react";
 
 import { PageComponent } from "../../types";
 import { Class, Query, QueryClassArgs } from "../../graphql/generated";
-import { Session } from "next-auth";
-import { Maybe } from "graphql/jsutils/Maybe";
-import { useEffect } from "react";
-
 import { useAppContext } from "../../context/AppContext";
+import { GET_CLASS } from "../../graphql/queries";
 
 type Props = {
   session: Session;
 };
-
-const GET_CLASS = gql`
-  query getClass($id: String!) {
-    class(id: $id) {
-      id
-      name
-      subject
-      assignments {
-        id
-        assignmentID
-        name
-        teacherID
-        classID
-      }
-    }
-  }
-`;
 
 const ClassComp: PageComponent<Props> = ({ session }) => {
   const router = useRouter();
